@@ -1,3 +1,8 @@
 from django.contrib import admin
+from .models import Admin
 
-# Register your models here.
+
+@admin.register(Admin)
+class AdminModelAdmin(admin.ModelAdmin):
+    list_display = ('username', 'email', 'created_at')
+    search_fields = ('username', 'email')
