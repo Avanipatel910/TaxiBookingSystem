@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import PasswordResetView
 import random
+from django.core.mail import send_mail
+
 
 def admin_login(request):
     if request.user.is_authenticated:
@@ -58,7 +60,13 @@ def admin_forgot_password(request):
             request.session['reset_otp'] = otp
             request.session['reset_email'] = email
 
-            print("Admin Password Reset OTP:", otp)
+            send_mail(
+                'Admin Password Reset OTP',
+                f'Your password reset OTP is: {otp}',
+                'admin@example.com',
+                [email],
+                fail_silently=False,
+            )
 
             return redirect('verify_otp')
 
@@ -70,6 +78,7 @@ def admin_forgot_password(request):
 
     return render(request, 'admin_forgot_password.html')
 
+
 def verify_otp(request):
     if request.method == 'POST':
         entered_otp = request.POST.get('otp')
@@ -77,7 +86,12 @@ def verify_otp(request):
 
         if entered_otp == saved_otp:
             request.session['otp_verified'] = True
-            return redirect('reset_password')
+
+            return render(
+                request,
+                'otp_verified.html',
+                {'message': 'OTP verified successfully.'}
+            )
 
         return render(
             request,
@@ -86,7 +100,6 @@ def verify_otp(request):
         )
 
     return render(request, 'verify_otp.html')
-
 
 def admin_register(request):
     if request.user.is_authenticated:
