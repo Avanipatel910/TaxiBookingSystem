@@ -1,9 +1,21 @@
+from django.contrib import admin
 from django.urls import path
-from . import views
-
+from core.views import (
+    admin_login,
+    admin_logout,
+    admin_register,
+    dashboard,
+  
+)
 urlpatterns = [
-    path('admin-login/', views.admin_login, name='admin_login'),
-    path('admin-register/', views.admin_register, name='admin_register'),
-    path('logout/', views.admin_logout, name='admin_logout'),
-    path('dashboard/', views.dashboard, name='dashboard'),
+    path('admin/', admin.site.urls),
+
+    path('admin-login/', admin_login, name='admin_login'),
+
+    path('admin-register/', admin_register, name='admin_register'),
+
+  
+    path('logout/', admin_logout, name='admin_logout'),
+
+    path('dashboard/', dashboard, name='dashboard'),
 ]

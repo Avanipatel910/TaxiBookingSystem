@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import PasswordResetView
-
+import random
 
 def admin_login(request):
     if request.user.is_authenticated:
@@ -41,6 +41,51 @@ def dashboard(request):
         return redirect('admin_login')
 
     return render(request, 'dashboard.html')
+
+
+def admin_forgot_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+
+        user = User.objects.filter(
+            email=email,
+            is_staff=True
+        ).first()
+
+        if user:
+            otp = str(random.randint(100000, 999999))
+
+            request.session['reset_otp'] = otp
+            request.session['reset_email'] = email
+
+            print("Admin Password Reset OTP:", otp)
+
+            return redirect('verify_otp')
+
+        return render(
+            request,
+            'admin_forgot_password.html',
+            {'error': 'No admin account found with this email.'}
+        )
+
+    return render(request, 'admin_forgot_password.html')
+
+def verify_otp(request):
+    if request.method == 'POST':
+        entered_otp = request.POST.get('otp')
+        saved_otp = request.session.get('reset_otp')
+
+        if entered_otp == saved_otp:
+            request.session['otp_verified'] = True
+            return redirect('reset_password')
+
+        return render(
+            request,
+            'verify_otp.html',
+            {'error': 'Invalid OTP.'}
+        )
+
+    return render(request, 'verify_otp.html')
 
 
 def admin_register(request):

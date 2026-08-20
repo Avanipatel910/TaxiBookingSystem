@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Forgot Password</title>
+    <title>Verify OTP</title>
 </head>
 <body>
 
-    <h2>Forgot Password</h2>
+    <h2>Verify OTP</h2>
 
-    <p>Enter your admin email address to receive an OTP.</p>
+    <p>Enter the 6-digit OTP generated for your account.</p>
 
     {% if error %}
         <p>{{ error }}</p>
@@ -16,17 +16,18 @@
     <form method="POST">
         {% csrf_token %}
 
-        <label>Email</label>
+        <label>OTP</label>
 
         <input
-            type="email"
-            name="email"
-            placeholder="Enter your email"
+            type="text"
+            name="otp"
+            maxlength="6"
+            placeholder="Enter OTP"
             required
         >
 
         <button type="submit">
-            Generate OTP
+            Verify OTP
         </button>
     </form>
 
