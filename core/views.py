@@ -1,10 +1,7 @@
-
-from django.contrib.auth.hashers import make_password
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect
-from .models import Admin
-
 from django.contrib.auth.models import User
+from django.shortcuts import render, redirect
+from django.contrib.auth.views import PasswordResetView
 
 
 def admin_login(request):
@@ -46,7 +43,6 @@ def dashboard(request):
     return render(request, 'dashboard.html')
 
 
-
 def admin_register(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
@@ -84,78 +80,6 @@ def admin_register(request):
 
         user.is_staff = True
         user.save()
-
-        return redirect('admin_login')
-
-    return render(request, 'admin_register.html')
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
-
-        if password != confirm_password:
-            return render(
-                request,
-                'admin_register.html',
-                {'error': 'Passwords do not match.'}
-            )
-
-        if Admin.objects.filter(username=username).exists():
-            return render(
-                request,
-                'admin_register.html',
-                {'error': 'Username already exists.'}
-            )
-
-        if Admin.objects.filter(email=email).exists():
-            return render(
-                request,
-                'admin_register.html',
-                {'error': 'Email already exists.'}
-            )
-
-        Admin.objects.create(
-            username=username,
-            email=email,
-            password=make_password(password)
-        )
-
-        return redirect('admin_login')
-
-    return render(request, 'admin_register.html')
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
-
-        if password != confirm_password:
-            return render(
-                request,
-                'admin_register.html',
-                {'error': 'Passwords do not match.'}
-            )
-
-        if Admin.objects.filter(username=username).exists():
-            return render(
-                request,
-                'admin_register.html',
-                {'error': 'Username already exists.'}
-            )
-
-        if Admin.objects.filter(email=email).exists():
-            return render(
-                request,
-                'admin_register.html',
-                {'error': 'Email already exists.'}
-            )
-
-        Admin.objects.create(
-            username=username,
-            email=email,
-            password=make_password(password)
-        )
 
         return redirect('admin_login')
 
