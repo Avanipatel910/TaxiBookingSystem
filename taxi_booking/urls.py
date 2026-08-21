@@ -8,6 +8,7 @@ from core.views import (
     dashboard,
     admin_forgot_password,
     verify_otp,
+    reset_password,
 )
 
 urlpatterns = [
@@ -17,17 +18,11 @@ urlpatterns = [
 
     path('admin-register/', admin_register, name='admin_register'),
 
-    path(
-        'admin-forgot-password/',
-        admin_forgot_password,
-        name='admin_forgot_password'
-    ),
+    path('admin-forgot-password/',admin_forgot_password,name='admin_forgot_password'),
 
-    path(
-        'verify-otp/',
-        verify_otp,
-        name='verify_otp'
-    ),
+    path('verify-otp/',verify_otp,name='verify_otp'),
+
+    path('reset-password/',reset_password,name='reset_password'),
 
     path('logout/', admin_logout, name='admin_logout'),
 

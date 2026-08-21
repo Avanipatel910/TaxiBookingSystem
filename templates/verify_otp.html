@@ -1,35 +1,347 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Verify OTP</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Verify OTP | Taxi Booking System</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+
+            font-family: Arial, Helvetica, sans-serif;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: linear-gradient(
+                135deg,
+                #f5f7fa 0%,
+                #e9eef5 100%
+            );
+
+            padding: 20px;
+        }
+
+        .otp-card {
+            width: 100%;
+            max-width: 460px;
+
+            background: #ffffff;
+
+            border-radius: 18px;
+
+            padding: 45px 40px;
+
+            text-align: center;
+
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.10);
+
+            animation: fadeIn 0.5s ease;
+        }
+
+        .otp-icon {
+            width: 80px;
+            height: 80px;
+
+            margin: 0 auto 25px;
+
+            border-radius: 50%;
+
+            background: #fff6d9;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 36px;
+
+            color: #f5b400;
+        }
+
+        .otp-card h1 {
+            font-size: 27px;
+
+            color: #222;
+
+            margin-bottom: 12px;
+        }
+
+        .otp-description {
+            color: #777;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+
+            margin-bottom: 25px;
+        }
+
+        .otp-description strong {
+            color: #333;
+        }
+
+        .error {
+            background: #fff0f0;
+
+            color: #d93025;
+
+            border: 1px solid #ffd2d2;
+
+            padding: 11px 14px;
+
+            border-radius: 7px;
+
+            font-size: 14px;
+
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            text-align: left;
+
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            color: #333;
+
+            margin-bottom: 8px;
+        }
+
+        .otp-input {
+            width: 100%;
+
+            padding: 15px;
+
+            border: 1px solid #d5d9df;
+
+            border-radius: 8px;
+
+            outline: none;
+
+            text-align: center;
+
+            font-size: 24px;
+
+            font-weight: 600;
+
+            letter-spacing: 8px;
+
+            color: #222;
+
+            transition: 0.2s;
+        }
+
+        .otp-input:focus {
+            border-color: #f5b400;
+
+            box-shadow:
+                0 0 0 3px rgba(245, 180, 0, 0.12);
+        }
+
+        .otp-input::placeholder {
+            font-size: 14px;
+
+            letter-spacing: normal;
+
+            font-weight: normal;
+
+            color: #aaa;
+        }
+
+        .verify-btn {
+            width: 100%;
+
+            padding: 13px 20px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #f5b400;
+
+            color: #111;
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: all 0.2s ease;
+        }
+
+        .verify-btn:hover {
+            background: #e0a200;
+
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 5px 15px rgba(245, 180, 0, 0.25);
+        }
+
+        .security-note {
+            margin-top: 25px;
+
+            padding-top: 20px;
+
+            border-top: 1px solid #eee;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+            color: #999;
+        }
+
+        .security-note strong {
+            color: #666;
+        }
+
+        .brand {
+            margin-top: 20px;
+
+            font-size: 13px;
+
+            color: #aaa;
+        }
+
+        .brand strong {
+            color: #555;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 500px) {
+
+            .otp-card {
+                padding: 35px 25px;
+            }
+
+            .otp-card h1 {
+                font-size: 23px;
+            }
+
+            .otp-icon {
+                width: 70px;
+                height: 70px;
+
+                font-size: 31px;
+            }
+
+            .otp-input {
+                font-size: 20px;
+
+                letter-spacing: 6px;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-    <h2>Verify OTP</h2>
+    <div class="otp-card">
 
-    <p>Enter the 6-digit OTP generated for your account.</p>
+        <!-- OTP Icon -->
+        <div class="otp-icon">
+            🔐
+        </div>
 
-    {% if error %}
-        <p>{{ error }}</p>
-    {% endif %}
+        <!-- Heading -->
+        <h1>Verify OTP</h1>
 
-    <form method="POST">
-        {% csrf_token %}
+        <!-- Description -->
+        <p class="otp-description">
+            We have sent a <strong>6-digit OTP</strong> to your
+            registered email address.
+            Enter the OTP below to continue resetting your password.
+        </p>
 
-        <label>OTP</label>
+        <!-- Error -->
+        {% if error %}
+            <div class="error">
+                {{ error }}
+            </div>
+        {% endif %}
 
-        <input
-            type="text"
-            name="otp"
-            maxlength="6"
-            placeholder="Enter OTP"
-            required
-        >
+        <!-- OTP Form -->
+        <form method="POST">
 
-        <button type="submit">
-            Verify OTP
-        </button>
-    </form>
+            {% csrf_token %}
+
+            <div class="form-group">
+
+                <label for="otp">
+                    Enter OTP
+                </label>
+
+                <input
+                    type="text"
+                    id="otp"
+                    name="otp"
+                    class="otp-input"
+                    maxlength="6"
+                    minlength="6"
+                    pattern="[0-9]{6}"
+                    inputmode="numeric"
+                    autocomplete="one-time-code"
+                    placeholder="000000"
+                    required
+                >
+
+            </div>
+
+            <button
+                type="submit"
+                class="verify-btn"
+            >
+                Verify OTP
+            </button>
+
+        </form>
+
+        <!-- Security Message -->
+        <div class="security-note">
+            <strong>Security notice:</strong>
+            Never share your OTP with anyone.
+        </div>
+
+        <!-- Branding -->
+        <div class="brand">
+            <strong>Taxi Booking System</strong>
+            <br>
+            Secure Admin Portal
+        </div>
+
+    </div>
 
 </body>
 </html>

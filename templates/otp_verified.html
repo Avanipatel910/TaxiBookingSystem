@@ -1,13 +1,216 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>OTP Verified</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Password Reset Successful | Taxi Booking System</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: linear-gradient(
+                135deg,
+                #f5f7fa 0%,
+                #e9eef5 100%
+            );
+
+            padding: 20px;
+        }
+
+        .success-card {
+            width: 100%;
+            max-width: 460px;
+
+            background: #ffffff;
+
+            border-radius: 18px;
+
+            padding: 45px 40px;
+
+            text-align: center;
+
+            box-shadow:
+                0 15px 40px rgba(0, 0, 0, 0.10);
+
+            animation: fadeIn 0.5s ease;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+
+            margin: 0 auto 25px;
+
+            border-radius: 50%;
+
+            background: #e8f8ee;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: #20a957;
+
+            font-size: 42px;
+            font-weight: bold;
+        }
+
+        .success-card h1 {
+            font-size: 26px;
+
+            color: #222;
+
+            margin-bottom: 12px;
+        }
+
+        .success-card .message {
+            font-size: 16px;
+
+            color: #333;
+
+            margin-bottom: 10px;
+
+            font-weight: 600;
+        }
+
+        .success-card .description {
+            color: #777;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+
+            margin-bottom: 30px;
+        }
+
+        .login-btn {
+            display: inline-block;
+
+            width: 100%;
+
+            padding: 13px 20px;
+
+            background: #f5b400;
+
+            color: #111;
+
+            text-decoration: none;
+
+            border-radius: 8px;
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            transition: all 0.2s ease;
+        }
+
+        .login-btn:hover {
+            background: #e0a200;
+
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 5px 15px rgba(245, 180, 0, 0.25);
+        }
+
+        .brand {
+            margin-top: 25px;
+
+            font-size: 13px;
+
+            color: #999;
+        }
+
+        .brand strong {
+            color: #555;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 500px) {
+
+            .success-card {
+                padding: 35px 25px;
+            }
+
+            .success-card h1 {
+                font-size: 23px;
+            }
+
+            .success-icon {
+                width: 70px;
+                height: 70px;
+
+                font-size: 36px;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-    <h2>{{ message }}</h2>
+    <div class="success-card">
 
-    <p>Your OTP has been verified successfully.</p>
+        <!-- Success Icon -->
+        <div class="success-icon">
+            ✓
+        </div>
+
+        <!-- Heading -->
+        <h1>Password Reset Successful</h1>
+
+        <!-- Django Message -->
+        <div class="message">
+            {{ message }}
+        </div>
+
+        <!-- Description -->
+        <p class="description">
+            Your password has been updated successfully.
+            You can now sign in to your admin account using
+            your new password.
+        </p>
+
+        <!-- Login Button -->
+        <a
+            href="{% url 'admin_login' %}"
+            class="login-btn"
+        >
+            Go to Admin Login
+        </a>
+
+        <!-- Branding -->
+        <div class="brand">
+            <strong>Taxi Booking System</strong>
+            <br>
+            Secure Admin Portal
+        </div>
+
+    </div>
 
 </body>
 </html>
