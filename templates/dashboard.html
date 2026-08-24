@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,14 +5,11 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Admin Dashboard | Taxi Booking System</title>
 
     <style>
-
         * {
             margin: 0;
             padding: 0;
@@ -90,6 +85,49 @@
             font-size: 15px;
         }
 
+        .welcome-profile {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #f5b400;
+            color: #111;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 22px;
+            font-weight: 700;
+
+            overflow: hidden;
+        }
+
+        .welcome-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .welcome-profile h1 {
+            margin-bottom: 4px;
+        }
+
+        .welcome-profile p {
+            margin: 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .welcome-description {
+            margin-top: 15px;
+        }
 
         /* =========================
            Dashboard Cards
@@ -258,14 +296,13 @@
             }
 
         }
-
     </style>
 
 </head>
 
 
 <body>
-{% include 'includes/navbar.html' %}
+    {% include 'includes/navbar.html' %}
     <div class="dashboard-layout">
 
         <!-- =========================
@@ -290,11 +327,31 @@
 
             <section class="welcome-section">
 
-                <h1>
-                    Welcome, {{ request.user.username }}
-                </h1>
+                <div class="welcome-profile">
 
-                <p>
+                    <div class="welcome-avatar">
+
+                        {% if request.user.admin_profile.image %}
+                        <img src="{{ request.user.admin_profile.image.url }}" alt="{{ request.user.username }}">
+                        {% else %}
+                        {{ request.user.username|first|upper }}
+                        {% endif %}
+
+                    </div>
+
+                    <div>
+                        <h1>
+                            Welcome, {{ request.user.username }}
+                        </h1>
+
+                        <p>
+                            Administrator
+                        </p>
+                    </div>
+
+                </div>
+
+                <p class="welcome-description">
                     Here's an overview of your Taxi Booking System.
                 </p>
 

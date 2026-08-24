@@ -5,14 +5,22 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 
+from .models import AdminProfile
+
 import random
 
 
+# =========================================================
+# ADMIN LOGIN
+# =========================================================
+
 def admin_login(request):
+
     if request.user.is_authenticated:
         return redirect('dashboard')
 
     if request.method == 'POST':
+
         username = request.POST.get('username')
         password = request.POST.get('password')
 
@@ -23,28 +31,54 @@ def admin_login(request):
         )
 
         if user is not None and user.is_staff:
+
             login(request, user)
+
             return redirect('dashboard')
 
         return render(
             request,
             'admin_login.html',
-            {'error': 'Invalid admin username or password.'}
+            {
+                'error': 'Invalid admin username or password.'
+            }
         )
 
-    return render(request, 'admin_login.html')
+    return render(
+        request,
+        'admin_login.html'
+    )
 
+
+# =========================================================
+# ADMIN LOGOUT
+# =========================================================
 
 def admin_logout(request):
+
     logout(request)
+
     return redirect('admin_login')
 
 
+# =========================================================
+# DASHBOARD
+# =========================================================
+
 def dashboard(request):
+
     if not request.user.is_authenticated or not request.user.is_staff:
         return redirect('admin_login')
 
-    return render(request, 'dashboard.html')
+    # Create profile automatically for old admin accounts
+    AdminProfile.objects.get_or_create(
+        user=request.user
+    )
+
+    return render(
+        request,
+        'dashboard.html'
+    )
 
 
 # =========================================================
@@ -52,8 +86,13 @@ def dashboard(request):
 # =========================================================
 
 def admin_forgot_password(request):
+
     if request.method == 'POST':
-        email = request.POST.get('email', '').strip()
+
+        email = request.POST.get(
+            'email',
+            ''
+        ).strip()
 
         user = User.objects.filter(
             email=email,
@@ -61,16 +100,23 @@ def admin_forgot_password(request):
         ).first()
 
         if not user:
+
             return render(
                 request,
                 'admin_forgot_password.html',
                 {
-                    'error': 'No admin account found with this email.'
+                    'error':
+                    'No admin account found with this email.'
                 }
             )
 
         # Generate 6 digit OTP
-        otp = str(random.randint(100000, 999999))
+        otp = str(
+            random.randint(
+                100000,
+                999999
+            )
+        )
 
         # Save OTP information in session
         request.session['reset_otp'] = otp
@@ -78,6 +124,7 @@ def admin_forgot_password(request):
         request.session['otp_verified'] = False
 
         try:
+
             send_mail(
                 'Taxi Booking System - Password Reset OTP',
 
@@ -96,19 +143,25 @@ Taxi Booking System
 ''',
 
                 None,
+
                 [email],
 
                 fail_silently=False,
             )
 
         except Exception as e:
-            print("EMAIL ERROR:", e)
+
+            print(
+                "EMAIL ERROR:",
+                e
+            )
 
             return render(
                 request,
                 'admin_forgot_password.html',
                 {
-                    'error': 'Unable to send OTP email. Please try again.'
+                    'error':
+                    'Unable to send OTP email. Please try again.'
                 }
             )
 
@@ -121,31 +174,42 @@ Taxi Booking System
 
 
 # =========================================================
-# VERIFY OTP
+# VERIFY PASSWORD RESET OTP
 # =========================================================
 
 def verify_otp(request):
 
-    # Make sure an OTP request actually exists
     if not request.session.get('reset_otp'):
-        return redirect('admin_forgot_password')
+
+        return redirect(
+            'admin_forgot_password'
+        )
 
     if request.method == 'POST':
 
-        entered_otp = request.POST.get('otp', '').strip()
-        saved_otp = request.session.get('reset_otp')
+        entered_otp = request.POST.get(
+            'otp',
+            ''
+        ).strip()
+
+        saved_otp = request.session.get(
+            'reset_otp'
+        )
 
         if entered_otp == saved_otp:
 
             request.session['otp_verified'] = True
 
-            return redirect('reset_password')
+            return redirect(
+                'reset_password'
+            )
 
         return render(
             request,
             'verify_otp.html',
             {
-                'error': 'Invalid OTP. Please try again.'
+                'error':
+                'Invalid OTP. Please try again.'
             }
         )
 
@@ -161,14 +225,21 @@ def verify_otp(request):
 
 def reset_password(request):
 
-    # User must verify OTP first
     if not request.session.get('otp_verified'):
-        return redirect('admin_forgot_password')
 
-    email = request.session.get('reset_email')
+        return redirect(
+            'admin_forgot_password'
+        )
+
+    email = request.session.get(
+        'reset_email'
+    )
 
     if not email:
-        return redirect('admin_forgot_password')
+
+        return redirect(
+            'admin_forgot_password'
+        )
 
     user = User.objects.filter(
         email=email,
@@ -176,63 +247,88 @@ def reset_password(request):
     ).first()
 
     if not user:
-        return redirect('admin_forgot_password')
+
+        return redirect(
+            'admin_forgot_password'
+        )
 
     if request.method == 'POST':
 
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
+        password = request.POST.get(
+            'password'
+        )
 
-        # Check empty fields
+        confirm_password = request.POST.get(
+            'confirm_password'
+        )
+
         if not password or not confirm_password:
+
             return render(
                 request,
                 'reset_password.html',
                 {
-                    'error': 'Both password fields are required.'
+                    'error':
+                    'Both password fields are required.'
                 }
             )
 
-        # Check password match
         if password != confirm_password:
+
             return render(
                 request,
                 'reset_password.html',
                 {
-                    'error': 'Passwords do not match.'
+                    'error':
+                    'Passwords do not match.'
                 }
             )
 
-        # Validate Django password rules
         try:
+
             validate_password(
                 password,
                 user
             )
 
         except ValidationError as e:
+
             return render(
                 request,
                 'reset_password.html',
                 {
-                    'error': ' '.join(e.messages)
+                    'error':
+                    ' '.join(e.messages)
                 }
             )
 
-        # Update password
-        user.set_password(password)
+        user.set_password(
+            password
+        )
+
         user.save()
 
-        # Delete reset session data
-        request.session.pop('reset_otp', None)
-        request.session.pop('reset_email', None)
-        request.session.pop('otp_verified', None)
+        request.session.pop(
+            'reset_otp',
+            None
+        )
+
+        request.session.pop(
+            'reset_email',
+            None
+        )
+
+        request.session.pop(
+            'otp_verified',
+            None
+        )
 
         return render(
             request,
             'otp_verified.html',
             {
-                'message': 'Password reset successfully!'
+                'message':
+                'Password reset successfully!'
             }
         )
 
@@ -243,7 +339,7 @@ def reset_password(request):
 
 
 # =========================================================
-# ADMIN REGISTER
+# ADMIN REGISTER - SEND OTP
 # =========================================================
 
 def admin_register(request):
@@ -251,7 +347,11 @@ def admin_register(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
 
-    if request.method == 'POST':
+    # =========================================================
+    # STEP 1: SEND OTP
+    # =========================================================
+
+    if request.method == 'POST' and request.POST.get('action') == 'send_otp':
 
         username = request.POST.get(
             'username',
@@ -271,29 +371,29 @@ def admin_register(request):
             'confirm_password'
         )
 
-        # Required fields
+        profile_image = request.FILES.get(
+            'profile_image'
+        )
+
+        # =====================================================
+        # REQUIRED FIELDS
+        # =====================================================
+
         if not username or not email or not password or not confirm_password:
 
             return render(
                 request,
                 'admin_register.html',
                 {
-                    'error': 'All fields are required.'
+                    'error': 'All fields are required.',
+                    'otp_stage': False
                 }
             )
 
-        # Password confirmation
-        if password != confirm_password:
+        # =====================================================
+        # USERNAME CHECK
+        # =====================================================
 
-            return render(
-                request,
-                'admin_register.html',
-                {
-                    'error': 'Passwords do not match.'
-                }
-            )
-
-        # Username already exists
         if User.objects.filter(
             username=username
         ).exists():
@@ -302,11 +402,15 @@ def admin_register(request):
                 request,
                 'admin_register.html',
                 {
-                    'error': 'Username already exists.'
+                    'error': 'Username already exists.',
+                    'otp_stage': False
                 }
             )
 
-        # Email already exists
+        # =====================================================
+        # EMAIL CHECK
+        # =====================================================
+
         if User.objects.filter(
             email=email
         ).exists():
@@ -315,16 +419,33 @@ def admin_register(request):
                 request,
                 'admin_register.html',
                 {
-                    'error': 'Email already exists.'
+                    'error': 'Email already exists.',
+                    'otp_stage': False
                 }
             )
 
-        # Django password validation
+        # =====================================================
+        # PASSWORD MATCH
+        # =====================================================
+
+        if password != confirm_password:
+
+            return render(
+                request,
+                'admin_register.html',
+                {
+                    'error': 'Passwords do not match.',
+                    'otp_stage': False
+                }
+            )
+
+        # =====================================================
+        # PASSWORD VALIDATION
+        # =====================================================
+
         try:
 
-            validate_password(
-                password
-            )
+            validate_password(password)
 
         except ValidationError as e:
 
@@ -332,24 +453,469 @@ def admin_register(request):
                 request,
                 'admin_register.html',
                 {
-                    'error': ' '.join(e.messages)
+                    'error': ' '.join(e.messages),
+                    'otp_stage': False
                 }
             )
 
-        # Create user
+        # =====================================================
+        # GENERATE OTP
+        # =====================================================
+
+        otp = str(
+            random.randint(
+                100000,
+                999999
+            )
+        )
+
+        # =====================================================
+        # SAVE REGISTRATION DATA IN SESSION
+        # =====================================================
+
+        request.session['registration_username'] = username
+
+        request.session['registration_email'] = email
+
+        request.session['registration_password'] = password
+
+        request.session['registration_otp'] = otp
+
+        # =====================================================
+        # SAVE IMAGE TEMPORARILY
+        # =====================================================
+
+        if profile_image:
+
+            from django.core.files.storage import default_storage
+
+            image_name = (
+                'temp_admin_' +
+                str(random.randint(100000, 999999)) +
+                '_' +
+                profile_image.name
+            )
+
+            saved_path = default_storage.save(
+                'temp/' + image_name,
+                profile_image
+            )
+
+            request.session[
+                'registration_image_path'
+            ] = saved_path
+
+        else:
+
+            request.session[
+                'registration_image_path'
+            ] = ''
+
+        # =====================================================
+        # SEND OTP EMAIL
+        # =====================================================
+
+        try:
+
+            send_mail(
+
+                'Taxi Booking System - Admin Registration OTP',
+
+                f'''Hello {username},
+
+Your Taxi Booking System admin registration OTP is:
+
+{otp}
+
+Enter this OTP on the registration page to complete your registration.
+
+If you did not request this registration, please ignore this email.
+
+Regards,
+Taxi Booking System
+''',
+
+                None,
+
+                [email],
+
+                fail_silently=False
+            )
+
+        except Exception as e:
+
+            print(
+                "REGISTRATION EMAIL ERROR:",
+                e
+            )
+
+            return render(
+                request,
+                'admin_register.html',
+                {
+                    'error':
+                    'Unable to send OTP email. Please try again.',
+                    'otp_stage': False
+                }
+            )
+
+        # =====================================================
+        # SHOW OTP SECTION ON SAME PAGE
+        # =====================================================
+
+        return render(
+            request,
+            'admin_register.html',
+            {
+                'otp_stage': True,
+                'email': email
+            }
+        )
+
+
+    # =========================================================
+    # STEP 2: VERIFY OTP
+    # =========================================================
+
+    if request.method == 'POST' and request.POST.get('action') == 'verify_otp':
+
+        entered_otp = request.POST.get(
+            'otp',
+            ''
+        ).strip()
+
+        saved_otp = request.session.get(
+            'registration_otp'
+        )
+
+        # =====================================================
+        # CHECK OTP EXISTS
+        # =====================================================
+
+        if not saved_otp:
+
+            return render(
+                request,
+                'admin_register.html',
+                {
+                    'error':
+                    'OTP session expired. Please register again.',
+                    'otp_stage': False
+                }
+            )
+
+        # =====================================================
+        # CHECK OTP
+        # =====================================================
+
+        if entered_otp != saved_otp:
+
+            return render(
+                request,
+                'admin_register.html',
+                {
+                    'error':
+                    'Invalid OTP. Please check your email and try again.',
+                    'otp_stage': True,
+                    'email':
+                    request.session.get(
+                        'registration_email'
+                    )
+                }
+            )
+
+        # =====================================================
+        # GET REGISTRATION DATA
+        # =====================================================
+
+        username = request.session.get(
+            'registration_username'
+        )
+
+        email = request.session.get(
+            'registration_email'
+        )
+
+        password = request.session.get(
+            'registration_password'
+        )
+
+        image_path = request.session.get(
+            'registration_image_path'
+        )
+
+        # =====================================================
+        # CREATE USER
+        # =====================================================
+
         user = User.objects.create_user(
+
             username=username,
+
             email=email,
+
             password=password
         )
 
-        # Make user admin/staff
+        # =====================================================
+        # MAKE USER ADMIN
+        # =====================================================
+
         user.is_staff = True
+
         user.save()
 
-        return redirect('admin_login')
+        # =====================================================
+        # CREATE ADMIN PROFILE
+        # =====================================================
+
+        profile = AdminProfile.objects.create(
+            user=user
+        )
+
+        # =====================================================
+        # MOVE PROFILE IMAGE
+        # =====================================================
+
+        if image_path:
+
+            from django.core.files.storage import default_storage
+            from django.core.files import File
+
+            if default_storage.exists(
+                image_path
+            ):
+
+                with default_storage.open(
+                    image_path,
+                    'rb'
+                ) as image_file:
+
+                    profile.image.save(
+                        image_path.split('/')[-1],
+                        File(image_file),
+                        save=True
+                    )
+
+                default_storage.delete(
+                    image_path
+                )
+
+        # =====================================================
+        # CLEAR REGISTRATION SESSION
+        # =====================================================
+
+        request.session.pop(
+            'registration_username',
+            None
+        )
+
+        request.session.pop(
+            'registration_email',
+            None
+        )
+
+        request.session.pop(
+            'registration_password',
+            None
+        )
+
+        request.session.pop(
+            'registration_otp',
+            None
+        )
+
+        request.session.pop(
+            'registration_image_path',
+            None
+        )
+
+        # =====================================================
+        # REGISTRATION COMPLETE
+        # =====================================================
+
+        return redirect(
+            'admin_login'
+        )
+
+
+    # =========================================================
+    # NORMAL REGISTRATION PAGE
+    # =========================================================
 
     return render(
         request,
-        'admin_register.html'
+        'admin_register.html',
+        {
+            'otp_stage': False
+        }
+    )
+
+# =========================================================
+# VERIFY REGISTRATION OTP
+# =========================================================
+
+def verify_registration_otp(request):
+
+    otp = request.session.get(
+        'registration_otp'
+    )
+
+    if not otp:
+
+        return redirect(
+            'admin_register'
+        )
+
+    if request.method == 'POST':
+
+        entered_otp = request.POST.get(
+            'otp',
+            ''
+        ).strip()
+
+        if entered_otp != otp:
+
+            return render(
+                request,
+                'verify_registration_otp.html',
+                {
+                    'error':
+                    'Invalid OTP. Please try again.',
+                    'email':
+                    request.session.get(
+                        'registration_email'
+                    )
+                }
+            )
+
+        # =================================================
+        # GET REGISTRATION DATA
+        # =================================================
+
+        username = request.session.get(
+            'registration_username'
+        )
+
+        email = request.session.get(
+            'registration_email'
+        )
+
+        password = request.session.get(
+            'registration_password'
+        )
+
+        image_path = request.session.get(
+            'registration_image_path'
+        )
+
+        # =================================================
+        # CREATE USER
+        # =================================================
+
+        user = User.objects.create_user(
+
+            username=username,
+
+            email=email,
+
+            password=password
+        )
+
+        # =================================================
+        # MAKE ADMIN
+        # =================================================
+
+        user.is_staff = True
+
+        user.save()
+
+        # =================================================
+        # CREATE ADMIN PROFILE
+        # =================================================
+
+        profile = AdminProfile.objects.create(
+            user=user
+        )
+
+        # =================================================
+        # RESTORE PROFILE IMAGE
+        # =================================================
+
+        if image_path:
+
+            from django.core.files.storage import default_storage
+            from django.core.files import File
+
+            if default_storage.exists(
+                image_path
+            ):
+
+                with default_storage.open(
+                    image_path,
+                    'rb'
+                ) as image_file:
+
+                    profile.image.save(
+                        image_path.split('/')[-1],
+                        File(image_file),
+                        save=True
+                    )
+
+                default_storage.delete(
+                    image_path
+                )
+
+        # =================================================
+        # CLEAR SESSION
+        # =================================================
+
+        request.session.pop(
+            'registration_username',
+            None
+        )
+
+        request.session.pop(
+            'registration_email',
+            None
+        )
+
+        request.session.pop(
+            'registration_password',
+            None
+        )
+
+        request.session.pop(
+            'registration_otp',
+            None
+        )
+
+        request.session.pop(
+            'registration_image_path',
+            None
+        )
+
+        request.session.pop(
+            'registration_image_name',
+            None
+        )
+
+        # =================================================
+        # SUCCESS
+        # =================================================
+
+        return render(
+            request,
+            'registration_success.html'
+        )
+
+    return render(
+        request,
+        'verify_registration_otp.html',
+        {
+            'email':
+            request.session.get(
+                'registration_email'
+            )
+        }
     )

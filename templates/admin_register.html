@@ -1,203 +1,762 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Admin Registration | Taxi Booking System</title>
+    <title>
+        Admin Registration | Taxi Booking System
+    </title>
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+   <style>
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+
+    /* =========================
+       PAGE
+    ========================= */
+
+    body {
+        font-family: Arial, sans-serif;
+
+        min-height: 100vh;
+
+        background:
+            linear-gradient(
+                135deg,
+                #0f172a,
+                #1e293b
+            );
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        padding: 15px;
+
+        overflow: hidden;
+    }
+
+
+    /* =========================
+       REGISTER CONTAINER
+    ========================= */
+
+    .register-container {
+
+        width: 420px;
+
+        max-height: 95vh;
+
+        background: #ffffff;
+
+        padding: 30px 35px;
+
+        border-radius: 20px;
+
+        box-shadow:
+            0 20px 50px
+            rgba(0, 0, 0, 0.25);
+
+    }
+
+
+    /* =========================
+       LOGO
+    ========================= */
+
+    .logo {
+
+        width: 55px;
+
+        height: 55px;
+
+        margin:
+            0 auto 12px;
+
+        background: #facc15;
+
+        border-radius: 50%;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        font-size: 26px;
+    }
+
+
+    /* =========================
+       HEADING
+    ========================= */
+
+    h1 {
+
+        text-align: center;
+
+        color: #1e293b;
+
+        margin-bottom: 5px;
+
+        font-size: 25px;
+    }
+
+
+    .subtitle {
+
+        text-align: center;
+
+        color: #64748b;
+
+        margin-bottom: 18px;
+
+        font-size: 13px;
+
+        line-height: 1.5;
+    }
+
+
+    /* =========================
+       FORM GROUP
+    ========================= */
+
+    .form-group {
+
+        margin-bottom: 12px;
+    }
+
+
+    /* =========================
+       LABEL
+    ========================= */
+
+    label {
+
+        display: block;
+
+        margin-bottom: 7px;
+
+        color: #334155;
+
+        font-weight: 600;
+
+        font-size: 14px;
+    }
+
+
+    /* =========================
+       INPUT
+    ========================= */
+
+    input {
+
+        width: 100%;
+
+        padding: 10px 12px;
+
+        border:
+            1px solid #cbd5e1;
+
+        border-radius: 9px;
+
+        font-size: 14px;
+
+        outline: none;
+
+        background: #ffffff;
+    }
+
+
+    input:focus {
+
+        border-color: #facc15;
+
+        box-shadow:
+            0 0 0 3px
+            rgba(250, 204, 21, 0.15);
+    }
+
+
+    /* =========================
+       OTP INPUT
+    ========================= */
+
+    .otp-input {
+
+        text-align: center;
+
+        font-size: 22px;
+
+        letter-spacing: 7px;
+
+        font-weight: bold;
+    }
+
+
+    /* =========================
+       REGISTER BUTTON
+    ========================= */
+
+    .register-btn {
+
+        width: 100%;
+
+        padding: 11px;
+
+        border: none;
+
+        border-radius: 9px;
+
+        background: #facc15;
+
+        color: #1e293b;
+
+        font-size: 15px;
+
+        font-weight: bold;
+
+        cursor: pointer;
+
+        transition:
+            background 0.2s ease,
+            transform 0.2s ease;
+    }
+
+
+    .register-btn:hover {
+
+        background: #eab308;
+
+        transform: translateY(-1px);
+    }
+
+
+    /* =========================
+       ERROR MESSAGE
+    ========================= */
+
+    .error {
+
+        background: #fee2e2;
+
+        color: #b91c1c;
+
+        padding: 10px;
+
+        border-radius: 8px;
+
+        margin-bottom: 15px;
+
+        font-size: 14px;
+
+        text-align: center;
+
+        line-height: 1.4;
+    }
+
+
+    /* =========================
+       SUCCESS MESSAGE
+    ========================= */
+
+    .success {
+
+        background: #dcfce7;
+
+        color: #15803d;
+
+        padding: 10px;
+
+        border-radius: 8px;
+
+        margin-bottom: 15px;
+
+        font-size: 14px;
+
+        text-align: center;
+    }
+
+
+    /* =========================
+       OTP INFORMATION
+    ========================= */
+
+    .otp-info {
+
+        background: #f8fafc;
+
+        border:
+            1px solid #e2e8f0;
+
+        padding: 12px;
+
+        border-radius: 10px;
+
+        margin-bottom: 15px;
+
+        text-align: center;
+
+        color: #475569;
+
+        font-size: 13px;
+
+        line-height: 1.5;
+    }
+
+
+    .otp-email {
+
+        color: #1e293b;
+
+        font-weight: bold;
+    }
+
+
+    /* =========================
+       LOGIN LINK
+    ========================= */
+
+    .login-link {
+
+        text-align: center;
+
+        margin-top: 15px;
+
+        font-size: 14px;
+
+        color: #64748b;
+    }
+
+
+    .login-link a {
+
+        color: #1e293b;
+
+        font-weight: bold;
+
+        text-decoration: none;
+    }
+
+
+    .login-link a:hover {
+
+        text-decoration: underline;
+    }
+
+
+    /* =========================
+       BACK BUTTON
+    ========================= */
+
+    .back-button {
+
+        display: block;
+
+        text-align: center;
+
+        margin-top: 12px;
+
+        color: #64748b;
+
+        font-size: 13px;
+
+        text-decoration: none;
+    }
+
+
+    .back-button:hover {
+
+        color: #1e293b;
+
+        text-decoration: underline;
+    }
+
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (max-width: 500px) {
 
         body {
-            font-family: Arial, sans-serif;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+
+            padding: 10px;
+
+            overflow: hidden;
         }
+
 
         .register-container {
-            width: 420px;
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+
+            width: 100%;
+
+            max-width: 420px;
+
+            max-height: 96vh;
+
+            padding: 25px 22px;
         }
+
 
         .logo {
-            width: 65px;
-            height: 65px;
-            margin: 0 auto 20px;
-            background: #facc15;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
+
+            width: 50px;
+
+            height: 50px;
+
+            font-size: 23px;
+
+            margin-bottom: 10px;
         }
+
 
         h1 {
-            text-align: center;
-            color: #1e293b;
-            margin-bottom: 8px;
+
+            font-size: 22px;
         }
+
 
         .subtitle {
-            text-align: center;
-            color: #64748b;
-            margin-bottom: 25px;
-            font-size: 14px;
+
+            font-size: 12px;
+
+            margin-bottom: 15px;
         }
+
 
         .form-group {
-            margin-bottom: 18px;
+
+            margin-bottom: 10px;
         }
+
 
         label {
-            display: block;
-            margin-bottom: 7px;
-            color: #334155;
-            font-weight: 600;
-            font-size: 14px;
+
+            font-size: 13px;
+
+            margin-bottom: 5px;
         }
+
 
         input {
-            width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #cbd5e1;
-            border-radius: 9px;
-            font-size: 15px;
-            outline: none;
+
+            padding: 9px 11px;
+
+            font-size: 14px;
         }
 
-        input:focus {
-            border-color: #facc15;
-            box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.15);
-        }
 
         .register-btn {
-            width: 100%;
-            padding: 13px;
-            border: none;
-            border-radius: 9px;
-            background: #facc15;
-            color: #1e293b;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
 
-        .register-btn:hover {
-            background: #eab308;
-        }
-
-        .error {
-            background: #fee2e2;
-            color: #b91c1c;
             padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 18px;
+
             font-size: 14px;
         }
+
 
         .login-link {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #64748b;
+
+            margin-top: 12px;
+
+            font-size: 13px;
+        }
+    }
+
+
+    /* =========================
+       VERY SMALL HEIGHT SCREENS
+    ========================= */
+
+    @media (max-height: 650px) {
+
+        body {
+
+            padding: 8px;
         }
 
-        .login-link a {
-            color: #1e293b;
-            font-weight: bold;
-            text-decoration: none;
+
+        .register-container {
+
+            padding: 18px 25px;
         }
-    </style>
+
+
+        .logo {
+
+            width: 45px;
+
+            height: 45px;
+
+            font-size: 21px;
+
+            margin-bottom: 7px;
+        }
+
+
+        h1 {
+
+            font-size: 21px;
+        }
+
+
+        .subtitle {
+
+            margin-bottom: 10px;
+        }
+
+
+        .form-group {
+
+            margin-bottom: 7px;
+        }
+
+
+        label {
+
+            margin-bottom: 4px;
+
+            font-size: 12px;
+        }
+
+
+        input {
+
+            padding: 7px 10px;
+        }
+
+
+        .register-btn {
+
+            padding: 9px;
+        }
+
+
+        .login-link {
+
+            margin-top: 8px;
+        }
+    }
+
+</style>
+
 </head>
+
 
 <body>
 
-<div class="register-container">
 
-    <div class="logo">🚕</div>
+    <div class="register-container">
 
-    <h1>Admin Registration</h1>
 
-    <p class="subtitle">
-        Create a new administrator account
-    </p>
+        <div class="logo">
+            🚕
+        </div>
 
-    {% if error %}
+
+        {% if otp_stage %}
+
+        <!-- ==========================================
+             OTP VERIFICATION STAGE
+        =========================================== -->
+
+        <h1>
+            Verify Email
+        </h1>
+
+
+        <p class="subtitle">
+            Enter the OTP sent to your email
+        </p>
+
+
+        {% if error %}
+
         <div class="error">
             {{ error }}
         </div>
-    {% endif %}
 
-    <form method="POST">
-        {% csrf_token %}
+        {% endif %}
 
-        <div class="form-group">
-            <label for="username">Username</label>
-            <input
-                type="text"
-                id="username"
-                name="username"
-                placeholder="Enter username"
-                required
-            >
+
+        <div class="otp-info">
+
+            We sent a 6-digit verification code to
+
+            <br>
+
+            <span class="otp-email">
+                {{ email }}
+            </span>
+
         </div>
 
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="Enter email"
-                required
-            >
+
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <input type="hidden" name="action" value="verify_otp">
+
+
+            <div class="form-group">
+
+                <label for="otp">
+                    Enter OTP
+                </label>
+
+                <input type="text" id="otp" name="otp" class="otp-input" placeholder="000000" maxlength="6"
+                    pattern="[0-9]{6}" autocomplete="one-time-code" required>
+
+            </div>
+
+
+            <button type="submit" class="register-btn">
+                Verify & Register
+            </button>
+
+        </form>
+
+
+        <a href="{% url 'admin_register' %}" class="back-button">
+            Start registration again
+        </a>
+
+
+        {% else %}
+
+
+        <!-- ==========================================
+             REGISTRATION STAGE
+        =========================================== -->
+
+        <h1>
+            Admin Registration
+        </h1>
+
+
+        <p class="subtitle">
+            Create a new administrator account
+        </p>
+
+
+        {% if error %}
+
+        <div class="error">
+            {{ error }}
         </div>
 
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Enter password"
-                required
-            >
+        {% endif %}
+
+
+        <form method="POST" enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            <input type="hidden" name="action" value="send_otp">
+
+
+            <!-- Username -->
+
+            <div class="form-group">
+
+                <label for="username">
+                    Username
+                </label>
+
+                <input type="text" id="username" name="username" placeholder="Enter username" required>
+
+            </div>
+
+
+            <!-- Email -->
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input type="email" id="email" name="email" placeholder="Enter email" required>
+
+            </div>
+
+
+            <!-- Profile Image -->
+
+            <div class="form-group">
+
+                <label for="profile_image">
+                    Profile Image
+                </label>
+
+                <input type="file" id="profile_image" name="profile_image" accept="image/*">
+
+            </div>
+
+
+            <!-- Password -->
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input type="password" id="password" name="password" placeholder="Enter password" required>
+
+            </div>
+
+
+            <!-- Confirm Password -->
+
+            <div class="form-group">
+
+                <label for="confirm_password">
+                    Confirm Password
+                </label>
+
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm password"
+                    required>
+
+            </div>
+
+
+            <button type="submit" class="register-btn">
+                Send OTP
+            </button>
+
+        </form>
+
+
+        <div class="login-link">
+
+            Already have an account?
+
+            <a href="{% url 'admin_login' %}">
+                Login
+            </a>
+
         </div>
 
-        <div class="form-group">
-            <label for="confirm_password">Confirm Password</label>
-            <input
-                type="password"
-                id="confirm_password"
-                name="confirm_password"
-                placeholder="Confirm password"
-                required
-            >
-        </div>
 
-        <button type="submit" class="register-btn">
-            Register Admin
-        </button>
-    </form>
+        {% endif %}
 
-    <div class="login-link">
-        Already have an account?
-        <a href="{% url 'admin_login' %}">Login</a>
+
     </div>
 
-</div>
 
 </body>
+
 </html>

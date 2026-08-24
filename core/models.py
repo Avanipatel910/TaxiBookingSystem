@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Admin(models.Model):
@@ -9,3 +10,20 @@ class Admin(models.Model):
 
     def __str__(self):
         return self.username
+
+
+class AdminProfile(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='admin_profile'
+    )
+
+    image = models.ImageField(
+        upload_to='admin_profiles/',
+        blank=True,
+        null=True
+    )
+
+    def __str__(self):
+        return self.user.username
