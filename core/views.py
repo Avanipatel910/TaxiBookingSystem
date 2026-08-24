@@ -751,11 +751,9 @@ Taxi Booking System
         }
     )
 
-# =========================================================
-# VERIFY REGISTRATION OTP
-# =========================================================
 
 def verify_registration_otp(request):
+
 
     otp = request.session.get(
         'registration_otp'
@@ -830,17 +828,13 @@ def verify_registration_otp(request):
 
         user.save()
 
-        # =================================================
-        # CREATE ADMIN PROFILE
-        # =================================================
+    
 
         profile = AdminProfile.objects.create(
             user=user
         )
 
-        # =================================================
-        # RESTORE PROFILE IMAGE
-        # =================================================
+
 
         if image_path:
 
@@ -866,9 +860,7 @@ def verify_registration_otp(request):
                     image_path
                 )
 
-        # =================================================
-        # CLEAR SESSION
-        # =================================================
+   
 
         request.session.pop(
             'registration_username',
@@ -900,9 +892,7 @@ def verify_registration_otp(request):
             None
         )
 
-        # =================================================
-        # SUCCESS
-        # =================================================
+        
 
         return render(
             request,
@@ -918,4 +908,41 @@ def verify_registration_otp(request):
                 'registration_email'
             )
         }
+    )
+
+
+# =========================================================
+# FUTURE MODULE PLACEHOLDER VIEWS
+# =========================================================
+
+def drivers(request):
+
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return redirect('admin_login')
+
+    return render(
+        request,
+        'drivers.html'
+    )
+
+
+def users(request):
+
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return redirect('admin_login')
+
+    return render(
+        request,
+        'users.html'
+    )
+
+
+def bookings(request):
+
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return redirect('admin_login')
+
+    return render(
+        request,
+        'bookings.html'
     )

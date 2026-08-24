@@ -12,6 +12,9 @@ from core.views import (
     verify_otp,
     reset_password,
     verify_registration_otp,
+    drivers,
+    users,
+    bookings,
 )
 
 
@@ -68,6 +71,23 @@ urlpatterns = [
         'reset-password/',
         reset_password,
         name='reset_password'
+    ),
+        path(
+        'drivers/',
+        drivers,
+        name='drivers'
+    ),
+
+    path(
+        'users/',
+        users,
+        name='users'
+    ),
+
+    path(
+        'bookings/',
+        bookings,
+        name='bookings'
     ),
 ]
 
