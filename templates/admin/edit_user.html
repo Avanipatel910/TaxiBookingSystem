@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Edit User | Taxi Booking System
+{% endblock %}
+
+{% block content %}
+
+{% include 'includes/navbar.html' %}
+<div class="d-flex">
+
+    {% include 'includes/admin_sidebar.html' %}
+<div class="container-fluid py-4 px-4">
+
+    <!-- Page Header -->
+    <div class="mb-4">
+
+        <h1 class="fw-bold mb-1">
+            Edit User
+        </h1>
+
+        <p class="text-muted mb-0">
+            Update customer information
+        </p>
+
+    </div>
+
+
+    <!-- Edit User Card -->
+    <div class="row">
+
+        <div class="col-xl-7 col-lg-9">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body p-4 p-lg-5">
+
+                    {% if error %}
+
+                    <div class="alert alert-danger">
+                        {{ error }}
+                    </div>
+
+                    {% endif %}
+
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+
+                        <!-- Name -->
+                        <div class="mb-4">
+
+                            <label
+                                for="name"
+                                class="form-label fw-semibold"
+                            >
+                                Full Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                class="form-control"
+                                value="{{ user.name }}"
+                                placeholder="Enter full name"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Email -->
+                        <div class="mb-4">
+
+                            <label
+                                for="email"
+                                class="form-label fw-semibold"
+                            >
+                                Email Address
+                            </label>
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                class="form-control"
+                                value="{{ user.email }}"
+                                placeholder="Enter email address"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Mobile -->
+                        <div class="mb-4">
+
+                            <label
+                                for="mobile"
+                                class="form-label fw-semibold"
+                            >
+                                Mobile Number
+                            </label>
+
+                            <input
+                                type="text"
+                                id="mobile"
+                                name="mobile"
+                                class="form-control"
+                                value="{{ user.mobile }}"
+                                placeholder="Enter mobile number"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Buttons -->
+                        <div class="d-flex gap-2 pt-2">
+
+                            <button
+                                type="submit"
+                                class="btn btn-warning px-4"
+                            >
+                                Save Changes
+                            </button>
+
+                            <a
+                                href="{% url 'users' %}"
+                                class="btn btn-outline-secondary px-4"
+                            >
+                                Cancel
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+</div>
+{% endblock %}

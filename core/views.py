@@ -4,10 +4,9 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
-
-from .models import AdminProfile
-
+from .models import AdminProfile, User as CustomerUser
 import random
+from django.shortcuts import render, redirect, get_object_or_404
 
 def admin_login(request):
 
@@ -44,15 +43,11 @@ def admin_login(request):
         'auth/admin_login.html'
     )
 
-
-
 def admin_logout(request):
 
     logout(request)
 
     return redirect('admin_login')
-
-
 
 
 def dashboard(request):
@@ -158,8 +153,6 @@ Taxi Booking System
         'auth/admin_forgot_password.html'
     )
 
-
-
 def verify_otp(request):
 
     if not request.session.get('reset_otp'):
@@ -200,9 +193,6 @@ def verify_otp(request):
         request,
         'auth/verify_otp.html'
     )
-
-
-
 
 def reset_password(request):
 
@@ -317,9 +307,6 @@ def reset_password(request):
         request,
         'auth/reset_password.html'
     )
-
-
-
 
 def admin_register(request):
 
@@ -904,13 +891,104 @@ def drivers(request):
 def users(request):
 
     if not request.user.is_authenticated or not request.user.is_staff:
-        return redirect('admin_login')  
+        return redirect('admin_login')
+
+    user_list = CustomerUser.objects.all().order_by('-created_at')
 
     return render(
         request,
-        'admin/users.html'
+        'admin/users.html',
+        {
+            'users': user_list
+        }
     )
 
+def edit_user(request, user_id):
+
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return redirect('admin_login')
+
+    customer = get_object_or_404(
+        CustomerUser,
+        id=user_id
+    )
+
+    if request.method == 'POST':
+
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        mobile = request.POST.get('mobile', '').strip()
+
+        if not name or not email or not mobile:
+            return render(
+                request,
+                'admin/edit_user.html',
+                {
+                    'user': customer,
+                    'error': 'All fields are required.'
+                }
+            )
+
+        if CustomerUser.objects.filter(
+            email=email
+        ).exclude(
+            id=customer.id
+        ).exists():
+
+            return render(
+                request,
+                'admin/edit_user.html',
+                {
+                    'user': customer,
+                    'error': 'Email already exists.'
+                }
+            )
+
+        if CustomerUser.objects.filter(
+            mobile=mobile
+        ).exclude(
+            id=customer.id
+        ).exists():
+
+            return render(
+                request,
+                'admin/edit_user.html',
+                {
+                    'user': customer,
+                    'error': 'Mobile number already exists.'
+                }
+            )
+
+        customer.name = name
+        customer.email = email
+        customer.mobile = mobile
+        customer.save()
+
+        return redirect('users')
+
+    return render(
+        request,
+        'admin/edit_user.html',
+        {
+            'user': customer
+        }
+    )
+
+
+def delete_user(request, user_id):
+
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return redirect('admin_login')
+
+    customer = get_object_or_404(
+        CustomerUser,
+        id=user_id
+    )
+
+    if request.method == 'POST':
+        customer.delete()
+
+    return redirect('users')
 
 def bookings(request):
 
