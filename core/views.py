@@ -9,11 +9,6 @@ from .models import AdminProfile
 
 import random
 
-
-# =========================================================
-# ADMIN LOGIN
-# =========================================================
-
 def admin_login(request):
 
     if request.user.is_authenticated:
@@ -38,7 +33,7 @@ def admin_login(request):
 
         return render(
             request,
-            'admin_login.html',
+            'auth/admin_login.html',
             {
                 'error': 'Invalid admin username or password.'
             }
@@ -46,13 +41,10 @@ def admin_login(request):
 
     return render(
         request,
-        'admin_login.html'
+        'auth/admin_login.html'
     )
 
 
-# =========================================================
-# ADMIN LOGOUT
-# =========================================================
 
 def admin_logout(request):
 
@@ -61,9 +53,7 @@ def admin_logout(request):
     return redirect('admin_login')
 
 
-# =========================================================
-# DASHBOARD
-# =========================================================
+
 
 def dashboard(request):
 
@@ -77,13 +67,9 @@ def dashboard(request):
 
     return render(
         request,
-        'dashboard.html'
+        'admin/dashboard.html'
     )
 
-
-# =========================================================
-# ADMIN FORGOT PASSWORD
-# =========================================================
 
 def admin_forgot_password(request):
 
@@ -103,7 +89,7 @@ def admin_forgot_password(request):
 
             return render(
                 request,
-                'admin_forgot_password.html',
+                'auth/admin_forgot_password.html',
                 {
                     'error':
                     'No admin account found with this email.'
@@ -158,7 +144,7 @@ Taxi Booking System
 
             return render(
                 request,
-                'admin_forgot_password.html',
+                'auth/admin_forgot_password.html',
                 {
                     'error':
                     'Unable to send OTP email. Please try again.'
@@ -169,13 +155,10 @@ Taxi Booking System
 
     return render(
         request,
-        'admin_forgot_password.html'
+        'auth/admin_forgot_password.html'
     )
 
 
-# =========================================================
-# VERIFY PASSWORD RESET OTP
-# =========================================================
 
 def verify_otp(request):
 
@@ -206,7 +189,7 @@ def verify_otp(request):
 
         return render(
             request,
-            'verify_otp.html',
+            'auth/verify_otp.html',
             {
                 'error':
                 'Invalid OTP. Please try again.'
@@ -215,13 +198,11 @@ def verify_otp(request):
 
     return render(
         request,
-        'verify_otp.html'
+        'auth/verify_otp.html'
     )
 
 
-# =========================================================
-# RESET PASSWORD
-# =========================================================
+
 
 def reset_password(request):
 
@@ -266,7 +247,7 @@ def reset_password(request):
 
             return render(
                 request,
-                'reset_password.html',
+                'auth/reset_password.html',
                 {
                     'error':
                     'Both password fields are required.'
@@ -277,7 +258,7 @@ def reset_password(request):
 
             return render(
                 request,
-                'reset_password.html',
+                'auth/reset_password.html',
                 {
                     'error':
                     'Passwords do not match.'
@@ -295,7 +276,7 @@ def reset_password(request):
 
             return render(
                 request,
-                'reset_password.html',
+                'auth/reset_password.html',
                 {
                     'error':
                     ' '.join(e.messages)
@@ -325,7 +306,7 @@ def reset_password(request):
 
         return render(
             request,
-            'otp_verified.html',
+            'auth/otp_verified.html',
             {
                 'message':
                 'Password reset successfully!'
@@ -334,13 +315,11 @@ def reset_password(request):
 
     return render(
         request,
-        'reset_password.html'
+        'auth/reset_password.html'
     )
 
 
-# =========================================================
-# ADMIN REGISTER - SEND OTP
-# =========================================================
+
 
 def admin_register(request):
 
@@ -383,7 +362,7 @@ def admin_register(request):
 
             return render(
                 request,
-                'admin_register.html',
+                'auth/admin_register.html',
                 {
                     'error': 'All fields are required.',
                     'otp_stage': False
@@ -400,7 +379,7 @@ def admin_register(request):
 
             return render(
                 request,
-                'admin_register.html',
+                'auth/admin_register.html',
                 {
                     'error': 'Username already exists.',
                     'otp_stage': False
@@ -417,7 +396,7 @@ def admin_register(request):
 
             return render(
                 request,
-                'admin_register.html',
+                'auth/admin_register.html',
                 {
                     'error': 'Email already exists.',
                     'otp_stage': False
@@ -432,7 +411,7 @@ def admin_register(request):
 
             return render(
                 request,
-                'admin_register.html',
+                'auth/admin_register.html',
                 {
                     'error': 'Passwords do not match.',
                     'otp_stage': False
@@ -451,7 +430,7 @@ def admin_register(request):
 
             return render(
                 request,
-                'admin_register.html',
+                'auth/admin_register.html',
                 {
                     'error': ' '.join(e.messages),
                     'otp_stage': False
@@ -551,7 +530,7 @@ Taxi Booking System
 
             return render(
                 request,
-                'admin_register.html',
+                'auth/admin_register.html',
                 {
                     'error':
                     'Unable to send OTP email. Please try again.',
@@ -565,7 +544,7 @@ Taxi Booking System
 
         return render(
             request,
-            'admin_register.html',
+            'auth/admin_register.html',
             {
                 'otp_stage': True,
                 'email': email
@@ -596,7 +575,7 @@ Taxi Booking System
 
             return render(
                 request,
-                'admin_register.html',
+                'auth/admin_register.html',
                 {
                     'error':
                     'OTP session expired. Please register again.',
@@ -612,7 +591,7 @@ Taxi Booking System
 
             return render(
                 request,
-                'admin_register.html',
+                'auth/admin_register.html',
                 {
                     'error':
                     'Invalid OTP. Please check your email and try again.',
@@ -745,7 +724,7 @@ Taxi Booking System
 
     return render(
         request,
-        'admin_register.html',
+        'auth/admin_register.html',
         {
             'otp_stage': False
         }
@@ -776,7 +755,7 @@ def verify_registration_otp(request):
 
             return render(
                 request,
-                'verify_registration_otp.html',
+                'auth/verify_registration_otp.html',
                 {
                     'error':
                     'Invalid OTP. Please try again.',
@@ -896,12 +875,12 @@ def verify_registration_otp(request):
 
         return render(
             request,
-            'registration_success.html'
+            'auth/registration_success.html'
         )
 
     return render(
         request,
-        'verify_registration_otp.html',
+        'auth/verify_registration_otp.html',
         {
             'email':
             request.session.get(
@@ -911,10 +890,6 @@ def verify_registration_otp(request):
     )
 
 
-# =========================================================
-# FUTURE MODULE PLACEHOLDER VIEWS
-# =========================================================
-
 def drivers(request):
 
     if not request.user.is_authenticated or not request.user.is_staff:
@@ -922,18 +897,18 @@ def drivers(request):
 
     return render(
         request,
-        'drivers.html'
+        'admin/drivers.html'
     )
 
 
 def users(request):
 
     if not request.user.is_authenticated or not request.user.is_staff:
-        return redirect('admin_login')
+        return redirect('admin_login')  
 
     return render(
         request,
-        'users.html'
+        'admin/users.html'
     )
 
 
@@ -942,7 +917,4 @@ def bookings(request):
     if not request.user.is_authenticated or not request.user.is_staff:
         return redirect('admin_login')
 
-    return render(
-        request,
-        'bookings.html'
-    )
+    return render(request, 'admin/bookings.html')

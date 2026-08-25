@@ -1,8 +1,4 @@
-from django.contrib import admin
 from django.urls import path
-from django.conf import settings
-from django.conf.urls.static import static
-
 from core.views import (
     admin_login,
     admin_logout,
@@ -19,11 +15,6 @@ from core.views import (
 
 
 urlpatterns = [
-
-    path(
-        'admin/',
-        admin.site.urls
-    ),
 
     path(
         'admin-login/',
@@ -72,7 +63,8 @@ urlpatterns = [
         reset_password,
         name='reset_password'
     ),
-        path(
+
+    path(
         'drivers/',
         drivers,
         name='drivers'
@@ -90,11 +82,3 @@ urlpatterns = [
         name='bookings'
     ),
 ]
-
-
-if settings.DEBUG:
-
-    urlpatterns += static(
-        settings.MEDIA_URL,
-        document_root=settings.MEDIA_ROOT
-    )
