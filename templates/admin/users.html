@@ -104,7 +104,10 @@
                                 </td>
 
                                 <td class="text-end px-4">
-
+                                    <a href="{% url 'user_detail' user.id %}"
+   class="btn btn-sm btn-outline-primary">
+    View
+</a>
                                     <!-- Edit -->
                                     <a
                                         href="{% url 'edit_user' user.id %}"

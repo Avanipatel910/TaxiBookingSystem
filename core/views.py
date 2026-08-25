@@ -903,6 +903,23 @@ def users(request):
         }
     )
 
+def user_detail(request, user_id):
+
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return redirect('admin_login')
+
+    customer = get_object_or_404(
+        CustomerUser,
+        id=user_id
+    )
+
+    return render(
+        request,
+        'admin/user_detail.html',
+        {
+            'user': customer
+        }
+    )
 def edit_user(request, user_id):
 
     if not request.user.is_authenticated or not request.user.is_staff:
@@ -973,6 +990,7 @@ def edit_user(request, user_id):
             'user': customer
         }
     )
+
 
 
 def delete_user(request, user_id):

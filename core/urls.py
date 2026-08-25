@@ -10,6 +10,7 @@ from core.views import (
     verify_registration_otp,
     drivers,
     users,
+    user_detail,
     edit_user,
     delete_user,
     bookings,
@@ -77,6 +78,11 @@ urlpatterns = [
         users,
         name='users'
     ),
+    path(
+    'users/<int:user_id>/',
+    user_detail,
+    name='user_detail'
+),
     path(
     'users/<int:user_id>/edit/',
     edit_user,
