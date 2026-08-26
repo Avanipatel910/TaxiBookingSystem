@@ -31,7 +31,27 @@
 
     </div>
 
+    <form method="GET" action="{% url 'users' %}" class="mb-4">
+    <div class="input-group">
+        <input
+            type="text"
+            name="search"
+            class="form-control"
+            placeholder="Search user by name or email..."
+            value="{{ search }}"
+        >
 
+        <button type="submit" class="btn btn-primary">
+            Search
+        </button>
+
+        {% if search %}
+            <a href="{% url 'users' %}" class="btn btn-outline-secondary">
+                Clear
+            </a>
+        {% endif %}
+    </div>
+</form>
     <!-- Users Card -->
     <div class="card border-0 shadow-sm">
 

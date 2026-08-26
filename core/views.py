@@ -1,13 +1,13 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
+from django.db.models import Q
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from .models import AdminProfile, User as CustomerUser
 import random
 from django.shortcuts import render, redirect, get_object_or_404
-
 def admin_login(request):
 
     if request.user.is_authenticated:
@@ -42,6 +42,7 @@ def admin_login(request):
         request,
         'auth/admin_login.html'
     )
+
 
 def admin_logout(request):
 
@@ -84,7 +85,7 @@ def admin_forgot_password(request):
 
             return render(
                 request,
-                'auth/admin_forgot_password.html',
+                'admin/auth/admin_forgot_password.html',
                 {
                     'error':
                     'No admin account found with this email.'
@@ -139,7 +140,7 @@ Taxi Booking System
 
             return render(
                 request,
-                'auth/admin_forgot_password.html',
+                'admin/auth/admin_forgot_password.html',
                 {
                     'error':
                     'Unable to send OTP email. Please try again.'
@@ -150,8 +151,9 @@ Taxi Booking System
 
     return render(
         request,
-        'auth/admin_forgot_password.html'
+        'admin/auth/admin_forgot_password.html'
     )
+
 
 def verify_otp(request):
 
@@ -182,7 +184,7 @@ def verify_otp(request):
 
         return render(
             request,
-            'auth/verify_otp.html',
+            'admin/auth/verify_otp.html',
             {
                 'error':
                 'Invalid OTP. Please try again.'
@@ -191,8 +193,9 @@ def verify_otp(request):
 
     return render(
         request,
-        'auth/verify_otp.html'
+        'admin/auth/verify_otp.html'
     )
+
 
 def reset_password(request):
 
@@ -237,7 +240,7 @@ def reset_password(request):
 
             return render(
                 request,
-                'auth/reset_password.html',
+                'admin/auth/reset_password.html',
                 {
                     'error':
                     'Both password fields are required.'
@@ -248,7 +251,7 @@ def reset_password(request):
 
             return render(
                 request,
-                'auth/reset_password.html',
+                'admin/auth/reset_password.html',
                 {
                     'error':
                     'Passwords do not match.'
@@ -266,7 +269,7 @@ def reset_password(request):
 
             return render(
                 request,
-                'auth/reset_password.html',
+                'admin/auth/reset_password.html',
                 {
                     'error':
                     ' '.join(e.messages)
@@ -296,7 +299,7 @@ def reset_password(request):
 
         return render(
             request,
-            'auth/otp_verified.html',
+            'admin/auth/otp_verified.html',
             {
                 'message':
                 'Password reset successfully!'
@@ -305,8 +308,9 @@ def reset_password(request):
 
     return render(
         request,
-        'auth/reset_password.html'
+        'admin/auth/reset_password.html'
     )
+
 
 def admin_register(request):
 
@@ -717,7 +721,6 @@ Taxi Booking System
         }
     )
 
-
 def verify_registration_otp(request):
 
 
@@ -876,7 +879,6 @@ def verify_registration_otp(request):
         }
     )
 
-
 def drivers(request):
 
     if not request.user.is_authenticated or not request.user.is_staff:
@@ -884,7 +886,7 @@ def drivers(request):
 
     return render(
         request,
-        'admin/drivers.html'
+        'admin/drivers/drivers.html'
     )
 
 
@@ -893,13 +895,22 @@ def users(request):
     if not request.user.is_authenticated or not request.user.is_staff:
         return redirect('admin_login')
 
+    search = request.GET.get('search', '').strip()
+
     user_list = CustomerUser.objects.all().order_by('-created_at')
+
+    if search:
+        user_list = user_list.filter(
+            Q(name__icontains=search) |
+            Q(email__icontains=search)
+        )
 
     return render(
         request,
-        'admin/users.html',
+        'admin/users/users.html',
         {
-            'users': user_list
+            'users': user_list,
+            'search': search,
         }
     )
 
@@ -915,11 +926,13 @@ def user_detail(request, user_id):
 
     return render(
         request,
-        'admin/user_detail.html',
+        'admin/users/user_detail.html',
         {
             'user': customer
         }
     )
+
+
 def edit_user(request, user_id):
 
     if not request.user.is_authenticated or not request.user.is_staff:
@@ -932,14 +945,26 @@ def edit_user(request, user_id):
 
     if request.method == 'POST':
 
-        name = request.POST.get('name', '').strip()
-        email = request.POST.get('email', '').strip()
-        mobile = request.POST.get('mobile', '').strip()
+        name = request.POST.get(
+            'name',
+            ''
+        ).strip()
+
+        email = request.POST.get(
+            'email',
+            ''
+        ).strip()
+
+        mobile = request.POST.get(
+            'mobile',
+            ''
+        ).strip()
 
         if not name or not email or not mobile:
+
             return render(
                 request,
-                'admin/edit_user.html',
+                'admin/users/edit_user.html',
                 {
                     'user': customer,
                     'error': 'All fields are required.'
@@ -954,7 +979,7 @@ def edit_user(request, user_id):
 
             return render(
                 request,
-                'admin/edit_user.html',
+                'admin/users/edit_user.html',
                 {
                     'user': customer,
                     'error': 'Email already exists.'
@@ -969,7 +994,7 @@ def edit_user(request, user_id):
 
             return render(
                 request,
-                'admin/edit_user.html',
+                'admin/users/edit_user.html',
                 {
                     'user': customer,
                     'error': 'Mobile number already exists.'
@@ -979,18 +1004,18 @@ def edit_user(request, user_id):
         customer.name = name
         customer.email = email
         customer.mobile = mobile
+
         customer.save()
 
         return redirect('users')
 
     return render(
         request,
-        'admin/edit_user.html',
+        'admin/users/edit_user.html',
         {
             'user': customer
         }
     )
-
 
 
 def delete_user(request, user_id):
@@ -1008,9 +1033,13 @@ def delete_user(request, user_id):
 
     return redirect('users')
 
+
 def bookings(request):
 
     if not request.user.is_authenticated or not request.user.is_staff:
         return redirect('admin_login')
 
-    return render(request, 'admin/bookings.html')
+    return render(
+        request,
+        'admin/bookings/bookings.html'
+    )
