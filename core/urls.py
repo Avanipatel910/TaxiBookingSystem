@@ -10,6 +10,7 @@ from core.views import (
     verify_registration_otp,
     drivers,
     driver_detail,
+    delete_driver,
     users,
     user_detail,
     edit_user,
@@ -79,7 +80,11 @@ urlpatterns = [
     driver_detail,
     name='driver_detail'
     ),
-
+    path(
+    'drivers/<int:driver_id>/delete/',
+    delete_driver,
+    name='delete_driver'
+    ),
     path(
         'users/',
         users,

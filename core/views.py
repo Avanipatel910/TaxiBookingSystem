@@ -884,15 +884,31 @@ def drivers(request):
     if not request.user.is_authenticated or not request.user.is_staff:
         return redirect('admin_login')
 
-    driver_list = Driver.objects.all().order_by('-created_at')
+    search = request.GET.get(
+        'search',
+        ''
+    ).strip()
+
+    driver_list = Driver.objects.all().order_by(
+        '-created_at'
+    )
+
+    if search:
+
+        driver_list = driver_list.filter(
+            Q(name__icontains=search) |
+            Q(email__icontains=search)
+        )
 
     return render(
         request,
         'admin/drivers/drivers.html',
         {
-            'drivers': driver_list
+            'drivers': driver_list,
+            'search': search
         }
     )
+
 
 def driver_detail(request, driver_id):
 
@@ -911,6 +927,22 @@ def driver_detail(request, driver_id):
             'driver': driver
         }
     )
+
+def delete_driver(request, driver_id):
+
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return redirect('admin_login')
+
+    driver = get_object_or_404(
+        Driver,
+        id=driver_id
+    )
+
+    if request.method == 'POST':
+
+        driver.delete()
+
+    return redirect('drivers')
 
 def users(request):
 
