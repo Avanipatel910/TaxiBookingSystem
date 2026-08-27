@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
-from .models import AdminProfile, User as CustomerUser
+from .models import AdminProfile, User as CustomerUser,Driver
 import random
 from django.shortcuts import render, redirect, get_object_or_404
 def admin_login(request):
@@ -884,11 +884,15 @@ def drivers(request):
     if not request.user.is_authenticated or not request.user.is_staff:
         return redirect('admin_login')
 
+    driver_list = Driver.objects.all().order_by('-created_at')
+
     return render(
         request,
-        'admin/drivers/drivers.html'
+        'admin/drivers/drivers.html',
+        {
+            'drivers': driver_list
+        }
     )
-
 
 def users(request):
 

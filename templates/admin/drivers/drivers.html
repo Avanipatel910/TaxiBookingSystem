@@ -8,20 +8,386 @@
 
     {% include 'includes/admin_sidebar.html' %}
 
-    <div class="flex-grow-1 p-4">
+    <div class="container-fluid py-4 px-4">
 
-        <div class="container-fluid">
-            <h2 class="mb-2">Driver Management</h2>
+        <!-- Page Header -->
+        <div class="d-flex flex-column flex-md-row
+                    justify-content-between
+                    align-items-md-center
+                    gap-3
+                    mb-4">
 
-            <p class="text-muted">
-                Driver management module will be implemented here.
-            </p>
+            <div>
+
+                <div class="d-flex align-items-center gap-2 mb-1">
+
+                    <h1 class="fw-bold mb-0">
+                        Drivers
+                    </h1>
+
+                    <span class="badge rounded-pill
+                                 bg-primary-subtle
+                                 text-primary">
+
+                        Drivers
+
+                    </span>
+
+                </div>
+
+                <p class="text-secondary mb-0">
+                    Manage registered drivers
+                </p>
+
+            </div>
+
+
+            <!-- Driver Count -->
+            <div class="bg-warning-subtle
+                        text-warning-emphasis
+                        rounded-3
+                        px-3
+                        py-2
+                        shadow-sm">
+
+                <div class="small fw-semibold">
+                    Total Drivers
+                </div>
+
+                <div class="fs-5 fw-bold">
+                    {{ drivers|length }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Drivers Card -->
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+
+            <!-- Card Header -->
+            <div class="card-header bg-white border-0
+                        d-flex justify-content-between
+                        align-items-center
+                        px-4 py-3">
+
+                <div>
+
+                    <h5 class="fw-bold mb-1">
+                        Driver List
+                    </h5>
+
+                    <small class="text-secondary">
+                        All registered drivers
+                    </small>
+
+                </div>
+
+                <span class="badge rounded-pill
+                             bg-primary-subtle
+                             text-primary
+                             px-3 py-2">
+
+                    <i class="bi bi-person-badge me-1"></i>
+
+                    {{ drivers|length }} Drivers
+
+                </span>
+
+            </div>
+
+
+            <div class="card-body p-0">
+
+                {% if drivers %}
+
+                <!-- Responsive Table -->
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-light">
+
+                            <tr>
+
+                                <th
+                                    scope="col"
+                                    class="px-4 py-3
+                                           text-secondary
+                                           small
+                                           text-uppercase"
+                                >
+                                    #
+                                </th>
+
+                                <th
+                                    scope="col"
+                                    class="py-3
+                                           text-secondary
+                                           small
+                                           text-uppercase"
+                                >
+                                    Driver
+                                </th>
+
+                                <th
+                                    scope="col"
+                                    class="py-3
+                                           text-secondary
+                                           small
+                                           text-uppercase"
+                                >
+                                    Email
+                                </th>
+
+                                <th
+                                    scope="col"
+                                    class="py-3
+                                           text-secondary
+                                           small
+                                           text-uppercase"
+                                >
+                                    License Number
+                                </th>
+
+                                <th
+                                    scope="col"
+                                    class="py-3
+                                           text-secondary
+                                           small
+                                           text-uppercase"
+                                >
+                                    Mobile
+                                </th>
+
+                                <th
+                                    scope="col"
+                                    class="py-3
+                                           text-secondary
+                                           small
+                                           text-uppercase"
+                                >
+                                    Registered
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for driver in drivers %}
+
+                            <tr>
+
+                                <!-- Number -->
+                                <td class="px-4 text-secondary">
+
+                                    {{ forloop.counter }}
+
+                                </td>
+
+
+                                <!-- Driver Name -->
+                                <td>
+
+                                    <div class="d-flex align-items-center gap-3">
+
+                                        <!-- Avatar -->
+                                        <div
+                                            class="rounded-circle
+                                                   bg-primary
+                                                   text-white
+                                                   d-flex
+                                                   align-items-center
+                                                   justify-content-center
+                                                   fw-bold
+                                                   flex-shrink-0"
+                                            style="width: 42px; height: 42px;"
+                                        >
+
+                                            {{ driver.name|first|upper }}
+
+                                        </div>
+
+
+                                        <div>
+
+                                            <div class="fw-semibold text-dark">
+
+                                                {{ driver.name }}
+
+                                            </div>
+
+                                            <small class="text-secondary">
+
+                                                Driver
+
+                                            </small>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- Email -->
+                                <td>
+
+                                    <div class="d-flex align-items-center gap-2">
+
+                                        <i class="bi bi-envelope text-secondary"></i>
+
+                                        {{ driver.email }}
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- License -->
+                                <td>
+
+                                    <span
+                                        class="badge
+                                               bg-light
+                                               text-dark
+                                               border
+                                               rounded-pill
+                                               px-3 py-2"
+                                    >
+
+                                        <i class="bi bi-card-text
+                                                  text-primary me-1"></i>
+
+                                        {{ driver.license_number }}
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- Mobile -->
+                                <td>
+
+                                    <div class="d-flex align-items-center gap-2">
+
+                                        <i class="bi bi-telephone
+                                                  text-secondary"></i>
+
+                                        {{ driver.mobile }}
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- Registered -->
+                                <td>
+
+                                    <span
+                                        class="badge
+                                               bg-light
+                                               text-dark
+                                               border
+                                               rounded-pill
+                                               px-3 py-2"
+                                    >
+
+                                        <i class="bi bi-calendar3
+                                                  text-primary me-1"></i>
+
+                                        {{ driver.created_at|date:"d M Y" }}
+
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <!-- Footer -->
+                <div class="border-top
+                            bg-light-subtle
+                            px-4 py-3">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-center">
+
+                        <small class="text-secondary">
+
+                            Showing
+                            <strong>{{ drivers|length }}</strong>
+                            drivers
+
+                        </small>
+
+                        <small class="text-secondary">
+
+                            <i class="bi bi-shield-check
+                                      text-success me-1"></i>
+
+                            Driver records
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                {% else %}
+
+                <!-- Empty State -->
+                <div class="text-center py-5 px-3">
+
+                    <div
+                        class="bg-primary-subtle
+                               text-primary
+                               rounded-circle
+                               d-inline-flex
+                               align-items-center
+                               justify-content-center
+                               mb-3"
+                        style="width: 70px; height: 70px;"
+                    >
+
+                        <i class="bi bi-person-badge fs-2"></i>
+
+                    </div>
+
+
+                    <h5 class="fw-bold mb-2">
+                        No Drivers Found
+                    </h5>
+
+
+                    <p class="text-secondary mb-0">
+                        No drivers have been registered yet.
+                    </p>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
         </div>
 
     </div>
 
 </div>
-
-
 
 {% endblock %}
