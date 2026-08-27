@@ -170,7 +170,17 @@
                                 >
                                     Registered
                                 </th>
-
+                                <th
+    scope="col"
+    class="text-end
+           px-4
+           py-3
+           text-secondary
+           small
+           text-uppercase"
+>
+    Actions
+</th>
                             </tr>
 
                         </thead>
@@ -305,7 +315,16 @@
                                     </span>
 
                                 </td>
+                                <td class="text-end px-4">
 
+    <a
+        href="{% url 'driver_detail' driver.id %}"
+        class="btn btn-sm btn-outline-primary rounded-3"
+    >
+        View Profile
+    </a>
+
+</td>
                             </tr>
 
                             {% endfor %}

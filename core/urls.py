@@ -9,6 +9,7 @@ from core.views import (
     reset_password,
     verify_registration_otp,
     drivers,
+    driver_detail,
     users,
     user_detail,
     edit_user,
@@ -71,6 +72,12 @@ urlpatterns = [
         'drivers/',
         drivers,
         name='drivers'
+    ),
+
+    path(
+    'drivers/<int:driver_id>/',
+    driver_detail,
+    name='driver_detail'
     ),
 
     path(

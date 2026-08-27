@@ -894,6 +894,24 @@ def drivers(request):
         }
     )
 
+def driver_detail(request, driver_id):
+
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return redirect('admin_login')
+
+    driver = get_object_or_404(
+        Driver,
+        id=driver_id
+    )
+
+    return render(
+        request,
+        'admin/drivers/driver_detail.html',
+        {
+            'driver': driver
+        }
+    )
+
 def users(request):
 
     if not request.user.is_authenticated or not request.user.is_staff:
