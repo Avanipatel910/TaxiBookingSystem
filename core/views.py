@@ -1,13 +1,19 @@
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
-from django.shortcuts import render, redirect
+from django.contrib.auth.models import User as AdminUser
+from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
-from .models import AdminProfile, User as CustomerUser,Driver
+from django.core.files.storage import default_storage
+from django.core.files import File
+
+from .models import AdminProfile, User as CustomerUser, Driver
+
 import random
-from django.shortcuts import render, redirect, get_object_or_404
+
+
+
 def admin_login(request):
 
     if request.user.is_authenticated:
@@ -51,10 +57,159 @@ def admin_logout(request):
     return redirect('admin_login')
 
 
+def user_register(request):
+
+    if request.method == 'POST':
+
+        name = request.POST.get(
+            'name',
+            ''
+        ).strip()
+
+        email = request.POST.get(
+            'email',
+            ''
+        ).strip().lower()
+
+        phone = request.POST.get(
+            'phone',
+            ''
+        ).strip()
+
+        password = request.POST.get(
+            'password'
+        )
+
+        confirm_password = request.POST.get(
+            'confirm_password'
+        )
+
+        # -------------------------------------------------
+        # REQUIRED FIELDS
+        # -------------------------------------------------
+
+        if not name or not email or not phone or not password or not confirm_password:
+
+            return render(
+                request,
+                'auth/user_register.html',
+                {
+                    'error': 'All fields are required.',
+                    'name': name,
+                    'email': email,
+                    'phone': phone,
+                }
+            )
+
+        # -------------------------------------------------
+        # PASSWORD MATCH
+        # -------------------------------------------------
+
+        if password != confirm_password:
+
+            return render(
+                request,
+                'auth/user_register.html',
+                {
+                    'error': 'Passwords do not match.',
+                    'name': name,
+                    'email': email,
+                    'phone': phone,
+                }
+            )
+
+        # -------------------------------------------------
+        # EMAIL CHECK
+        # -------------------------------------------------
+
+        if CustomerUser.objects.filter(
+            email=email
+        ).exists():
+
+            return render(
+                request,
+                'auth/user_register.html',
+                {
+                    'error': 'An account with this email already exists.',
+                    'name': name,
+                    'email': email,
+                    'phone': phone,
+                }
+            )
+
+        # -------------------------------------------------
+        # MOBILE CHECK
+        # -------------------------------------------------
+
+        if CustomerUser.objects.filter(
+            mobile=phone
+        ).exists():
+
+            return render(
+                request,
+                'auth/user_register.html',
+                {
+                    'error': 'An account with this phone number already exists.',
+                    'name': name,
+                    'email': email,
+                    'phone': phone,
+                }
+            )
+
+        # -------------------------------------------------
+        # PASSWORD VALIDATION
+        # -------------------------------------------------
+
+        try:
+
+            validate_password(password)
+
+        except ValidationError as e:
+
+            return render(
+                request,
+                'auth/user_register.html',
+                {
+                    'error': ' '.join(e.messages),
+                    'name': name,
+                    'email': email,
+                    'phone': phone,
+                }
+            )
+
+        # -------------------------------------------------
+        # CREATE CUSTOMER
+        # -------------------------------------------------
+
+        CustomerUser.objects.create(
+            name=name,
+            email=email,
+            mobile=phone,
+            password=password
+        )
+
+        return redirect(
+            'user_register_success'
+        )
+
+    return render(
+        request,
+        'auth/user_register.html'
+    )
+
+def user_register_success(request):
+    return render(
+        request,
+        'auth/register_success.html'
+    )
+
 def dashboard(request):
 
     if not request.user.is_authenticated or not request.user.is_staff:
-        return redirect('admin_login')
+
+        return redirect(
+            'admin_login'
+        )
 
     # Create profile automatically for old admin accounts
     AdminProfile.objects.get_or_create(
@@ -66,7 +221,6 @@ def dashboard(request):
         'admin/dashboard.html'
     )
 
-
 def admin_forgot_password(request):
 
     if request.method == 'POST':
@@ -76,7 +230,7 @@ def admin_forgot_password(request):
             ''
         ).strip()
 
-        user = User.objects.filter(
+        user = AdminUser.objects.filter(
             email=email,
             is_staff=True
         ).first()
@@ -92,7 +246,10 @@ def admin_forgot_password(request):
                 }
             )
 
-        # Generate 6 digit OTP
+        # -------------------------------------------------
+        # GENERATE OTP
+        # -------------------------------------------------
+
         otp = str(
             random.randint(
                 100000,
@@ -100,14 +257,22 @@ def admin_forgot_password(request):
             )
         )
 
-        # Save OTP information in session
+        # -------------------------------------------------
+        # SAVE OTP IN SESSION
+        # -------------------------------------------------
+
         request.session['reset_otp'] = otp
         request.session['reset_email'] = email
         request.session['otp_verified'] = False
 
+        # -------------------------------------------------
+        # SEND EMAIL
+        # -------------------------------------------------
+
         try:
 
             send_mail(
+
                 'Taxi Booking System - Password Reset OTP',
 
                 f'''Hello {user.username},
@@ -128,7 +293,7 @@ Taxi Booking System
 
                 [email],
 
-                fail_silently=False,
+                fail_silently=False
             )
 
         except Exception as e:
@@ -147,7 +312,9 @@ Taxi Booking System
                 }
             )
 
-        return redirect('verify_otp')
+        return redirect(
+            'verify_otp'
+        )
 
     return render(
         request,
@@ -157,7 +324,9 @@ Taxi Booking System
 
 def verify_otp(request):
 
-    if not request.session.get('reset_otp'):
+    if not request.session.get(
+        'reset_otp'
+    ):
 
         return redirect(
             'admin_forgot_password'
@@ -199,7 +368,9 @@ def verify_otp(request):
 
 def reset_password(request):
 
-    if not request.session.get('otp_verified'):
+    if not request.session.get(
+        'otp_verified'
+    ):
 
         return redirect(
             'admin_forgot_password'
@@ -215,7 +386,7 @@ def reset_password(request):
             'admin_forgot_password'
         )
 
-    user = User.objects.filter(
+    user = AdminUser.objects.filter(
         email=email,
         is_staff=True
     ).first()
@@ -282,6 +453,7 @@ def reset_password(request):
 
         user.save()
 
+        # Clear session
         request.session.pop(
             'reset_otp',
             None
@@ -312,16 +484,22 @@ def reset_password(request):
     )
 
 
+
 def admin_register(request):
 
     if request.user.is_authenticated:
-        return redirect('dashboard')
 
-    # =========================================================
+        return redirect(
+            'dashboard'
+        )
+
+    # =====================================================
     # STEP 1: SEND OTP
-    # =========================================================
+    # =====================================================
 
-    if request.method == 'POST' and request.POST.get('action') == 'send_otp':
+    if request.method == 'POST' and request.POST.get(
+        'action'
+    ) == 'send_otp':
 
         username = request.POST.get(
             'username',
@@ -345,9 +523,9 @@ def admin_register(request):
             'profile_image'
         )
 
-        # =====================================================
+        # -------------------------------------------------
         # REQUIRED FIELDS
-        # =====================================================
+        # -------------------------------------------------
 
         if not username or not email or not password or not confirm_password:
 
@@ -355,16 +533,18 @@ def admin_register(request):
                 request,
                 'auth/admin_register.html',
                 {
-                    'error': 'All fields are required.',
-                    'otp_stage': False
+                    'error':
+                    'All fields are required.',
+                    'otp_stage':
+                    False
                 }
             )
 
-        # =====================================================
+        # -------------------------------------------------
         # USERNAME CHECK
-        # =====================================================
+        # -------------------------------------------------
 
-        if User.objects.filter(
+        if AdminUser.objects.filter(
             username=username
         ).exists():
 
@@ -372,16 +552,18 @@ def admin_register(request):
                 request,
                 'auth/admin_register.html',
                 {
-                    'error': 'Username already exists.',
-                    'otp_stage': False
+                    'error':
+                    'Username already exists.',
+                    'otp_stage':
+                    False
                 }
             )
 
-        # =====================================================
+        # -------------------------------------------------
         # EMAIL CHECK
-        # =====================================================
+        # -------------------------------------------------
 
-        if User.objects.filter(
+        if AdminUser.objects.filter(
             email=email
         ).exists():
 
@@ -389,14 +571,16 @@ def admin_register(request):
                 request,
                 'auth/admin_register.html',
                 {
-                    'error': 'Email already exists.',
-                    'otp_stage': False
+                    'error':
+                    'Email already exists.',
+                    'otp_stage':
+                    False
                 }
             )
 
-        # =====================================================
+        # -------------------------------------------------
         # PASSWORD MATCH
-        # =====================================================
+        # -------------------------------------------------
 
         if password != confirm_password:
 
@@ -404,18 +588,22 @@ def admin_register(request):
                 request,
                 'auth/admin_register.html',
                 {
-                    'error': 'Passwords do not match.',
-                    'otp_stage': False
+                    'error':
+                    'Passwords do not match.',
+                    'otp_stage':
+                    False
                 }
             )
 
-        # =====================================================
+        # -------------------------------------------------
         # PASSWORD VALIDATION
-        # =====================================================
+        # -------------------------------------------------
 
         try:
 
-            validate_password(password)
+            validate_password(
+                password
+            )
 
         except ValidationError as e:
 
@@ -423,14 +611,16 @@ def admin_register(request):
                 request,
                 'auth/admin_register.html',
                 {
-                    'error': ' '.join(e.messages),
-                    'otp_stage': False
+                    'error':
+                    ' '.join(e.messages),
+                    'otp_stage':
+                    False
                 }
             )
 
-        # =====================================================
+        # -------------------------------------------------
         # GENERATE OTP
-        # =====================================================
+        # -------------------------------------------------
 
         otp = str(
             random.randint(
@@ -439,29 +629,40 @@ def admin_register(request):
             )
         )
 
-        # =====================================================
-        # SAVE REGISTRATION DATA IN SESSION
-        # =====================================================
+        # -------------------------------------------------
+        # SAVE REGISTRATION DATA
+        # -------------------------------------------------
 
-        request.session['registration_username'] = username
+        request.session[
+            'registration_username'
+        ] = username
 
-        request.session['registration_email'] = email
+        request.session[
+            'registration_email'
+        ] = email
 
-        request.session['registration_password'] = password
+        request.session[
+            'registration_password'
+        ] = password
 
-        request.session['registration_otp'] = otp
+        request.session[
+            'registration_otp'
+        ] = otp
 
-        # =====================================================
+        # -------------------------------------------------
         # SAVE IMAGE TEMPORARILY
-        # =====================================================
+        # -------------------------------------------------
 
         if profile_image:
 
-            from django.core.files.storage import default_storage
-
             image_name = (
                 'temp_admin_' +
-                str(random.randint(100000, 999999)) +
+                str(
+                    random.randint(
+                        100000,
+                        999999
+                    )
+                ) +
                 '_' +
                 profile_image.name
             )
@@ -481,9 +682,9 @@ def admin_register(request):
                 'registration_image_path'
             ] = ''
 
-        # =====================================================
+        # -------------------------------------------------
         # SEND OTP EMAIL
-        # =====================================================
+        # -------------------------------------------------
 
         try:
 
@@ -525,29 +726,33 @@ Taxi Booking System
                 {
                     'error':
                     'Unable to send OTP email. Please try again.',
-                    'otp_stage': False
+                    'otp_stage':
+                    False
                 }
             )
 
-        # =====================================================
-        # SHOW OTP SECTION ON SAME PAGE
-        # =====================================================
+        # -------------------------------------------------
+        # SHOW OTP SECTION
+        # -------------------------------------------------
 
         return render(
             request,
             'auth/admin_register.html',
             {
-                'otp_stage': True,
-                'email': email
+                'otp_stage':
+                True,
+                'email':
+                email
             }
         )
 
-
-    # =========================================================
+    # =====================================================
     # STEP 2: VERIFY OTP
-    # =========================================================
+    # =====================================================
 
-    if request.method == 'POST' and request.POST.get('action') == 'verify_otp':
+    if request.method == 'POST' and request.POST.get(
+        'action'
+    ) == 'verify_otp':
 
         entered_otp = request.POST.get(
             'otp',
@@ -558,9 +763,9 @@ Taxi Booking System
             'registration_otp'
         )
 
-        # =====================================================
+        # -------------------------------------------------
         # CHECK OTP EXISTS
-        # =====================================================
+        # -------------------------------------------------
 
         if not saved_otp:
 
@@ -570,13 +775,14 @@ Taxi Booking System
                 {
                     'error':
                     'OTP session expired. Please register again.',
-                    'otp_stage': False
+                    'otp_stage':
+                    False
                 }
             )
 
-        # =====================================================
+        # -------------------------------------------------
         # CHECK OTP
-        # =====================================================
+        # -------------------------------------------------
 
         if entered_otp != saved_otp:
 
@@ -586,7 +792,8 @@ Taxi Booking System
                 {
                     'error':
                     'Invalid OTP. Please check your email and try again.',
-                    'otp_stage': True,
+                    'otp_stage':
+                    True,
                     'email':
                     request.session.get(
                         'registration_email'
@@ -594,9 +801,9 @@ Taxi Booking System
                 }
             )
 
-        # =====================================================
+        # -------------------------------------------------
         # GET REGISTRATION DATA
-        # =====================================================
+        # -------------------------------------------------
 
         username = request.session.get(
             'registration_username'
@@ -614,11 +821,11 @@ Taxi Booking System
             'registration_image_path'
         )
 
-        # =====================================================
-        # CREATE USER
-        # =====================================================
+        # -------------------------------------------------
+        # CREATE ADMIN USER
+        # -------------------------------------------------
 
-        user = User.objects.create_user(
+        user = AdminUser.objects.create_user(
 
             username=username,
 
@@ -627,30 +834,27 @@ Taxi Booking System
             password=password
         )
 
-        # =====================================================
+        # -------------------------------------------------
         # MAKE USER ADMIN
-        # =====================================================
+        # -------------------------------------------------
 
         user.is_staff = True
 
         user.save()
 
-        # =====================================================
+        # -------------------------------------------------
         # CREATE ADMIN PROFILE
-        # =====================================================
+        # -------------------------------------------------
 
         profile = AdminProfile.objects.create(
             user=user
         )
 
-        # =====================================================
+        # -------------------------------------------------
         # MOVE PROFILE IMAGE
-        # =====================================================
+        # -------------------------------------------------
 
         if image_path:
-
-            from django.core.files.storage import default_storage
-            from django.core.files import File
 
             if default_storage.exists(
                 image_path
@@ -671,9 +875,9 @@ Taxi Booking System
                     image_path
                 )
 
-        # =====================================================
+        # -------------------------------------------------
         # CLEAR REGISTRATION SESSION
-        # =====================================================
+        # -------------------------------------------------
 
         request.session.pop(
             'registration_username',
@@ -700,29 +904,29 @@ Taxi Booking System
             None
         )
 
-        # =====================================================
+        # -------------------------------------------------
         # REGISTRATION COMPLETE
-        # =====================================================
+        # -------------------------------------------------
 
         return redirect(
             'admin_login'
         )
 
-
-    # =========================================================
+    # =====================================================
     # NORMAL REGISTRATION PAGE
-    # =========================================================
+    # =====================================================
 
     return render(
         request,
         'auth/admin_register.html',
         {
-            'otp_stage': False
+            'otp_stage':
+            False
         }
     )
 
-def verify_registration_otp(request):
 
+def verify_registration_otp(request):
 
     otp = request.session.get(
         'registration_otp'
@@ -756,9 +960,9 @@ def verify_registration_otp(request):
                 }
             )
 
-        # =================================================
+        # -------------------------------------------------
         # GET REGISTRATION DATA
-        # =================================================
+        # -------------------------------------------------
 
         username = request.session.get(
             'registration_username'
@@ -776,11 +980,11 @@ def verify_registration_otp(request):
             'registration_image_path'
         )
 
-        # =================================================
-        # CREATE USER
-        # =================================================
+        # -------------------------------------------------
+        # CREATE ADMIN USER
+        # -------------------------------------------------
 
-        user = User.objects.create_user(
+        user = AdminUser.objects.create_user(
 
             username=username,
 
@@ -789,26 +993,27 @@ def verify_registration_otp(request):
             password=password
         )
 
-        # =================================================
+        # -------------------------------------------------
         # MAKE ADMIN
-        # =================================================
+        # -------------------------------------------------
 
         user.is_staff = True
 
         user.save()
 
-    
+        # -------------------------------------------------
+        # CREATE PROFILE
+        # -------------------------------------------------
 
         profile = AdminProfile.objects.create(
             user=user
         )
 
-
+        # -------------------------------------------------
+        # MOVE IMAGE
+        # -------------------------------------------------
 
         if image_path:
-
-            from django.core.files.storage import default_storage
-            from django.core.files import File
 
             if default_storage.exists(
                 image_path
@@ -829,7 +1034,9 @@ def verify_registration_otp(request):
                     image_path
                 )
 
-   
+        # -------------------------------------------------
+        # CLEAR SESSION
+        # -------------------------------------------------
 
         request.session.pop(
             'registration_username',
@@ -861,8 +1068,6 @@ def verify_registration_otp(request):
             None
         )
 
-        
-
         return render(
             request,
             'auth/registration_success.html'
@@ -879,10 +1084,14 @@ def verify_registration_otp(request):
         }
     )
 
+
 def drivers(request):
 
     if not request.user.is_authenticated or not request.user.is_staff:
-        return redirect('admin_login')
+
+        return redirect(
+            'admin_login'
+        )
 
     search = request.GET.get(
         'search',
@@ -910,10 +1119,17 @@ def drivers(request):
     )
 
 
+# =========================================================
+# DRIVER DETAIL
+# =========================================================
+
 def driver_detail(request, driver_id):
 
     if not request.user.is_authenticated or not request.user.is_staff:
-        return redirect('admin_login')
+
+        return redirect(
+            'admin_login'
+        )
 
     driver = get_object_or_404(
         Driver,
@@ -928,10 +1144,18 @@ def driver_detail(request, driver_id):
         }
     )
 
+
+# =========================================================
+# DELETE DRIVER
+# =========================================================
+
 def delete_driver(request, driver_id):
 
     if not request.user.is_authenticated or not request.user.is_staff:
-        return redirect('admin_login')
+
+        return redirect(
+            'admin_login'
+        )
 
     driver = get_object_or_404(
         Driver,
@@ -942,18 +1166,34 @@ def delete_driver(request, driver_id):
 
         driver.delete()
 
-    return redirect('drivers')
+    return redirect(
+        'drivers'
+    )
+
+
+# =========================================================
+# CUSTOMERS / USERS
+# =========================================================
 
 def users(request):
 
     if not request.user.is_authenticated or not request.user.is_staff:
-        return redirect('admin_login')
 
-    search = request.GET.get('search', '').strip()
+        return redirect(
+            'admin_login'
+        )
 
-    user_list = CustomerUser.objects.all().order_by('-created_at')
+    search = request.GET.get(
+        'search',
+        ''
+    ).strip()
+
+    user_list = CustomerUser.objects.all().order_by(
+        '-created_at'
+    )
 
     if search:
+
         user_list = user_list.filter(
             Q(name__icontains=search) |
             Q(email__icontains=search)
@@ -968,10 +1208,18 @@ def users(request):
         }
     )
 
+
+# =========================================================
+# CUSTOMER DETAIL
+# =========================================================
+
 def user_detail(request, user_id):
 
     if not request.user.is_authenticated or not request.user.is_staff:
-        return redirect('admin_login')
+
+        return redirect(
+            'admin_login'
+        )
 
     customer = get_object_or_404(
         CustomerUser,
@@ -987,10 +1235,17 @@ def user_detail(request, user_id):
     )
 
 
+# =========================================================
+# EDIT CUSTOMER
+# =========================================================
+
 def edit_user(request, user_id):
 
     if not request.user.is_authenticated or not request.user.is_staff:
-        return redirect('admin_login')
+
+        return redirect(
+            'admin_login'
+        )
 
     customer = get_object_or_404(
         CustomerUser,
@@ -1021,7 +1276,8 @@ def edit_user(request, user_id):
                 'admin/users/edit_user.html',
                 {
                     'user': customer,
-                    'error': 'All fields are required.'
+                    'error':
+                    'All fields are required.'
                 }
             )
 
@@ -1036,7 +1292,8 @@ def edit_user(request, user_id):
                 'admin/users/edit_user.html',
                 {
                     'user': customer,
-                    'error': 'Email already exists.'
+                    'error':
+                    'Email already exists.'
                 }
             )
 
@@ -1051,7 +1308,8 @@ def edit_user(request, user_id):
                 'admin/users/edit_user.html',
                 {
                     'user': customer,
-                    'error': 'Mobile number already exists.'
+                    'error':
+                    'Mobile number already exists.'
                 }
             )
 
@@ -1061,7 +1319,9 @@ def edit_user(request, user_id):
 
         customer.save()
 
-        return redirect('users')
+        return redirect(
+            'users'
+        )
 
     return render(
         request,
@@ -1072,10 +1332,17 @@ def edit_user(request, user_id):
     )
 
 
+# =========================================================
+# DELETE CUSTOMER
+# =========================================================
+
 def delete_user(request, user_id):
 
     if not request.user.is_authenticated or not request.user.is_staff:
-        return redirect('admin_login')
+
+        return redirect(
+            'admin_login'
+        )
 
     customer = get_object_or_404(
         CustomerUser,
@@ -1083,15 +1350,25 @@ def delete_user(request, user_id):
     )
 
     if request.method == 'POST':
+
         customer.delete()
 
-    return redirect('users')
+    return redirect(
+        'users'
+    )
 
+
+# =========================================================
+# BOOKINGS
+# =========================================================
 
 def bookings(request):
 
     if not request.user.is_authenticated or not request.user.is_staff:
-        return redirect('admin_login')
+
+        return redirect(
+            'admin_login'
+        )
 
     return render(
         request,

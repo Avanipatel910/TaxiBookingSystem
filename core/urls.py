@@ -16,6 +16,8 @@ from core.views import (
     edit_user,
     delete_user,
     bookings,
+    user_register,
+    user_register_success,
 )
 
 
@@ -44,7 +46,12 @@ urlpatterns = [
         admin_logout,
         name='admin_logout'
     ),
-
+    path('register/', user_register, name='user_register'),
+    path(
+    'register/success/',
+    user_register_success,
+    name='user_register_success'
+),
     path(
         'dashboard/',
         dashboard,
