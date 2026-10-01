@@ -1,33 +1,57 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block title %}Admin Dashboard{% endblock %}
+<head>
 
-{% block content %}
+    <meta charset="UTF-8">
 
-
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Admin Dashboard | Taxi Booking System</title>
 
+
+    <!-- Bootstrap 5 -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- Bootstrap Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    >
+
+
     <style>
+
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
         }
 
 
         body {
-            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
 
-            background: #f1f5f9;
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
 
-            color: #1e293b;
+            background: #f4f7fb;
+
+            color: #172033;
         }
 
 
-        /* =========================
-           Dashboard Layout
-        ========================= */
+        /* =========================================
+           Main Layout
+        ========================================= */
 
         .dashboard-layout {
             display: flex;
@@ -36,10 +60,6 @@
         }
 
 
-        /* =========================
-           Sidebar
-        ========================= */
-
         .dashboard-sidebar {
             width: 250px;
 
@@ -47,135 +67,103 @@
         }
 
 
-        /* =========================
-           Main Content
-        ========================= */
-
-        .dashboard-content {
+        .dashboard-main {
             flex: 1;
 
-            padding: 35px;
-
             min-width: 0;
+
+            padding: 30px 32px 45px;
         }
 
 
-        /* =========================
-           Welcome Section
-        ========================= */
+        /* =========================================
+           Page Header
+        ========================================= */
 
-        .welcome-section {
-            margin-bottom: 30px;
+        .page-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            margin-bottom: 28px;
         }
 
 
-        .welcome-section h1 {
+        .page-title {
             font-size: 28px;
 
-            margin-bottom: 8px;
-
-            color: #1e293b;
-        }
-
-
-        .welcome-section p {
-            color: #64748b;
-
-            font-size: 15px;
-        }
-
-        .welcome-profile {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .welcome-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: #f5b400;
-            color: #111;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 22px;
             font-weight: 700;
 
-            overflow: hidden;
+            color: #162033;
+
+            margin: 0 0 6px;
         }
 
-        .welcome-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
 
-        .welcome-profile h1 {
-            margin-bottom: 4px;
-        }
+        .page-subtitle {
+            color: #7a8799;
 
-        .welcome-profile p {
-            margin: 0;
-            color: #64748b;
             font-size: 14px;
-        }
 
-        .welcome-description {
-            margin-top: 15px;
-        }
-
-        /* =========================
-           Dashboard Cards
-        ========================= */
-
-        .dashboard-cards {
-            display: grid;
-
-            grid-template-columns:
-                repeat(3, minmax(0, 1fr));
-
-            gap: 22px;
+            margin: 0;
         }
 
 
-        .dashboard-card {
+        .header-date {
             background: #ffffff;
 
-            padding: 25px;
+            border: 1px solid #e5eaf0;
 
-            border-radius: 14px;
+            border-radius: 10px;
+
+            padding: 9px 14px;
+
+            color: #667085;
+
+            font-size: 13px;
+
+            white-space: nowrap;
+        }
+
+
+        /* =========================================
+           Statistics Cards
+        ========================================= */
+
+        .stat-card {
+            background: #ffffff;
 
             border: 1px solid #e8edf3;
 
+            border-radius: 15px;
+
+            padding: 21px;
+
+            height: 100%;
+
             box-shadow:
-                0 6px 20px rgba(0, 0, 0, 0.05);
+                0 5px 18px rgba(31, 45, 61, 0.045);
 
             transition:
-                transform 0.2s ease,
-                box-shadow 0.2s ease;
+                transform .2s ease,
+                box-shadow .2s ease;
         }
 
 
-        .dashboard-card:hover {
+        .stat-card:hover {
             transform: translateY(-3px);
 
             box-shadow:
-                0 10px 25px rgba(0, 0, 0, 0.08);
+                0 10px 28px rgba(31, 45, 61, 0.09);
         }
 
 
-        /* =========================
-           Card Header
-        ========================= */
-
-        .card-header {
+        .stat-top {
             display: flex;
 
-            align-items: center;
+            align-items: flex-start;
 
             justify-content: space-between;
 
@@ -183,23 +171,34 @@
         }
 
 
-        .card-header h3 {
-            font-size: 15px;
+        .stat-label {
+            color: #778399;
+
+            font-size: 13px;
 
             font-weight: 600;
 
-            color: #475569;
+            margin-bottom: 7px;
         }
 
 
-        .card-icon {
-            width: 42px;
+        .stat-value {
+            color: #182235;
 
-            height: 42px;
+            font-size: 29px;
 
-            border-radius: 10px;
+            line-height: 1;
 
-            background: #fff7d9;
+            font-weight: 750;
+        }
+
+
+        .stat-icon {
+            width: 45px;
+
+            height: 45px;
+
+            border-radius: 12px;
 
             display: flex;
 
@@ -211,176 +210,637 @@
         }
 
 
-        /* =========================
-           Numbers
-        ========================= */
+        .icon-yellow {
+            background: #fff6d8;
 
-        .card-number {
-            font-size: 34px;
-
-            font-weight: 700;
-
-            color: #eab308;
-
-            line-height: 1;
+            color: #d99d00;
         }
 
 
-        .card-description {
-            margin-top: 10px;
+        .icon-blue {
+            background: #eaf3ff;
+
+            color: #2674d9;
+        }
+
+
+        .icon-green {
+            background: #e8f8ef;
+
+            color: #19945a;
+        }
+
+
+        .icon-purple {
+            background: #f2ecff;
+
+            color: #7650c9;
+        }
+
+
+        .stat-bottom {
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
 
             font-size: 12px;
 
-            color: #94a3b8;
+            color: #8b96a7;
         }
 
 
-        /* =========================
-           Responsive
-        ========================= */
+        .growth {
+            color: #15945b;
 
-        @media (max-width: 900px) {
+            font-weight: 700;
+        }
+
+
+        /* =========================================
+           Content Cards
+        ========================================= */
+
+        .content-card {
+            background: #ffffff;
+
+            border: 1px solid #e7ecf2;
+
+            border-radius: 15px;
+
+            box-shadow:
+                0 5px 18px rgba(31, 45, 61, 0.04);
+
+            height: 100%;
+        }
+
+
+        .content-card-header {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 20px 21px;
+
+            border-bottom: 1px solid #edf0f4;
+        }
+
+
+        .content-title {
+            margin: 0;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+            color: #202b3d;
+        }
+
+
+        .content-subtitle {
+            color: #929cad;
+
+            font-size: 12px;
+
+            margin-top: 4px;
+        }
+
+
+        .view-all {
+            color: #d59b00;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            text-decoration: none;
+        }
+
+
+        .view-all:hover {
+            color: #b27d00;
+        }
+
+
+        /* =========================================
+           Booking Table
+        ========================================= */
+
+        .booking-table {
+            margin: 0;
+        }
+
+
+        .booking-table thead th {
+            background: #fafbfd;
+
+            color: #8994a5;
+
+            border-bottom: 1px solid #edf0f4;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            letter-spacing: .4px;
+
+            padding: 13px 18px;
+
+            white-space: nowrap;
+        }
+
+
+        .booking-table tbody td {
+            padding: 15px 18px;
+
+            border-bottom: 1px solid #f0f2f5;
+
+            vertical-align: middle;
+
+            font-size: 13px;
+
+            color: #536074;
+        }
+
+
+        .booking-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+
+        .booking-id {
+            font-weight: 700;
+
+            color: #263349;
+        }
+
+
+        .customer-cell {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .customer-avatar {
+            width: 34px;
+
+            height: 34px;
+
+            border-radius: 50%;
+
+            background: #f1f4f8;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color: #596579;
+        }
+
+
+        .customer-name {
+            font-weight: 600;
+
+            color: #344054;
+        }
+
+
+        .route {
+            color: #667085;
+
+            white-space: nowrap;
+        }
+
+
+        .route i {
+            margin: 0 5px;
+
+            color: #b2bbc8;
+        }
+
+
+        /* =========================================
+           Status Badges
+        ========================================= */
+
+        .status-badge {
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 5px;
+
+            padding: 5px 9px;
+
+            border-radius: 20px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+
+        .status-completed {
+            background: #e9f8f0;
+
+            color: #168957;
+        }
+
+
+        .status-progress {
+            background: #fff6df;
+
+            color: #b77a00;
+        }
+
+
+        .status-pending {
+            background: #edf3ff;
+
+            color: #386fc3;
+        }
+
+
+        /* =========================================
+           Right Panel
+        ========================================= */
+
+        .availability-list {
+            padding: 7px 20px 15px;
+        }
+
+
+        .driver-row {
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 14px 0;
+
+            border-bottom: 1px solid #f0f2f5;
+        }
+
+
+        .driver-row:last-child {
+            border-bottom: none;
+        }
+
+
+        .driver-info {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .driver-avatar {
+            width: 38px;
+
+            height: 38px;
+
+            border-radius: 10px;
+
+            background: #f5f7fa;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            color: #64748b;
+
+            font-size: 17px;
+        }
+
+
+        .driver-name {
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color: #344054;
+        }
+
+
+        .driver-car {
+            font-size: 11px;
+
+            color: #98a2b3;
+
+            margin-top: 2px;
+        }
+
+
+        .online-status {
+            display: flex;
+
+            align-items: center;
+
+            gap: 5px;
+
+            color: #168957;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+
+        .online-dot {
+            width: 7px;
+
+            height: 7px;
+
+            border-radius: 50%;
+
+            background: #21a366;
+        }
+
+
+        .offline-status {
+            color: #98a2b3;
+        }
+
+
+        /* =========================================
+           Booking Summary
+        ========================================= */
+
+        .summary-body {
+            padding: 21px;
+        }
+
+
+        .summary-item {
+            margin-bottom: 20px;
+        }
+
+
+        .summary-label {
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-bottom: 7px;
+
+            font-size: 12px;
+
+            color: #667085;
+        }
+
+
+        .summary-label strong {
+            color: #344054;
+        }
+
+
+        .progress {
+            height: 7px;
+
+            background: #edf0f4;
+
+            border-radius: 10px;
+        }
+
+
+        .progress-bar {
+            border-radius: 10px;
+        }
+
+
+        .completed-bar {
+            background: #21a366;
+        }
+
+
+        .ongoing-bar {
+            background: #f2b300;
+        }
+
+
+        .pending-bar {
+            background: #4788df;
+        }
+
+
+        /* =========================================
+           Empty State
+        ========================================= */
+
+        .empty-table {
+            text-align: center;
+
+            padding: 35px 15px;
+
+            color: #98a2b3;
+        }
+
+
+        /* =========================================
+           Responsive
+        ========================================= */
+
+        @media (max-width: 992px) {
+
+            .dashboard-main {
+                padding: 25px 20px 35px;
+            }
 
             .dashboard-sidebar {
                 width: 210px;
             }
 
-
-            .dashboard-cards {
-                grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
-            }
-
-
-            .dashboard-content {
-                padding: 25px;
+            .page-header {
+                align-items: flex-start;
             }
 
         }
 
 
-        @media (max-width: 700px) {
+        @media (max-width: 768px) {
 
             .dashboard-layout {
                 min-height: calc(100vh - 65px);
             }
 
-
             .dashboard-sidebar {
                 width: 70px;
             }
 
-
-            .dashboard-content {
-                padding: 20px;
+            .dashboard-main {
+                padding: 22px 15px 30px;
             }
 
-
-            .dashboard-cards {
-                grid-template-columns: 1fr;
-            }
-
-
-            .welcome-section h1 {
+            .page-title {
                 font-size: 23px;
             }
 
-        }
+            .header-date {
+                display: none;
+            }
 
+            .booking-table {
+                min-width: 700px;
+            }
 
-        @media (max-width: 400px) {
-
-            .dashboard-content {
-                padding: 15px;
+            .table-responsive {
+                border-radius: 0 0 15px 15px;
             }
 
         }
+
+
+        @media (max-width: 480px) {
+
+            .dashboard-sidebar {
+                width: 58px;
+            }
+
+            .dashboard-main {
+                padding: 18px 10px 25px;
+            }
+
+            .page-title {
+                font-size: 21px;
+            }
+
+        }
+        
+
     </style>
 
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+         Top Navbar
+    ========================================= -->
 
     {% include 'includes/navbar.html' %}
+
+
     <div class="dashboard-layout">
 
-        <!-- =========================
-             Sidebar
-        ========================= -->
 
-        <div class="dashboard-sidebar">
+        <!-- =====================================
+             Sidebar
+        ===================================== -->
+
+        <aside class="dashboard-sidebar">
 
             {% include 'includes/admin_sidebar.html' %}
 
-        </div>
+        </aside>
 
 
-        <!-- =========================
-             Main Content
-        ========================= -->
+        <!-- =====================================
+             Main Dashboard
+        ===================================== -->
 
-        <main class="dashboard-content">
+        <main class="dashboard-main">
 
 
-            <!-- Welcome -->
+            <!-- Page Header -->
 
-            <section class="welcome-section">
+            <div class="page-header">
 
-                <div class="welcome-profile">
+                <div>
 
-                    <div class="welcome-avatar">
+                    <h1 class="page-title">
+                        Dashboard Overview
+                    </h1>
 
-                        {% if request.user.admin_profile.image %}
-                        <img src="{{ request.user.admin_profile.image.url }}" alt="{{ request.user.username }}">
-                        {% else %}
-                        {{ request.user.username|first|upper }}
-                        {% endif %}
-
-                    </div>
-
-                    <div>
-                        <h1>
-                            Welcome, {{ request.user.username }}
-                        </h1>
-
-                        <p>
-                            Administrator
-                        </p>
-                    </div>
+                    <p class="page-subtitle">
+                        Welcome back,
+                        <strong>{{ request.user.username }}</strong>.
+                        Here's what's happening today.
+                    </p>
 
                 </div>
 
-                <p class="welcome-description">
-                    Here's an overview of your Taxi Booking System.
-                </p>
 
-            </section>
+                <div class="header-date">
+
+                    <i class="bi bi-calendar3 me-1"></i>
+
+                    Today
+
+                </div>
+
+            </div>
 
 
-            <!-- Dashboard Cards -->
+            <!-- =================================
+                 KPI CARDS
+            ================================= -->
 
-            <section class="dashboard-cards">
+            <div class="row g-3 mb-4">
 
 
                 <!-- Customers -->
 
-                <div class="dashboard-card">
+                <div class="col-12 col-sm-6 col-xl-3">
 
-                    <div class="card-header">
+                    <div class="stat-card">
 
-                        <h3>
-                            Total Customers
-                        </h3>
+                        <div class="stat-top">
 
-                        <div class="card-icon">
-                            👥
+                            <div>
+
+                                <div class="stat-label">
+                                    Total Customers
+                                </div>
+
+                                <div class="stat-value">
+                                    0
+                                </div>
+
+                            </div>
+
+                            <div class="stat-icon icon-purple">
+
+                                <i class="bi bi-people-fill"></i>
+
+                            </div>
+
                         </div>
 
-                    </div>
 
-                    <div class="card-number">
-                        0
-                    </div>
+                        <div class="stat-bottom">
 
-                    <div class="card-description">
-                        Registered customers
+                            <span class="growth">
+                                <i class="bi bi-arrow-up"></i>
+                                0%
+                            </span>
+
+                            <span>
+                                this month
+                            </span>
+
+                        </div>
+
                     </div>
 
                 </div>
@@ -388,26 +848,46 @@
 
                 <!-- Drivers -->
 
-                <div class="dashboard-card">
+                <div class="col-12 col-sm-6 col-xl-3">
 
-                    <div class="card-header">
+                    <div class="stat-card">
 
-                        <h3>
-                            Total Drivers
-                        </h3>
+                        <div class="stat-top">
 
-                        <div class="card-icon">
-                            🚗
+                            <div>
+
+                                <div class="stat-label">
+                                    Total Drivers
+                                </div>
+
+                                <div class="stat-value">
+                                    0
+                                </div>
+
+                            </div>
+
+                            <div class="stat-icon icon-blue">
+
+                                <i class="bi bi-car-front-fill"></i>
+
+                            </div>
+
                         </div>
 
-                    </div>
 
-                    <div class="card-number">
-                        0
-                    </div>
+                        <div class="stat-bottom">
 
-                    <div class="card-description">
-                        Registered drivers
+                            <span class="growth">
+                                <i class="bi bi-check-circle"></i>
+                                0
+                            </span>
+
+                            <span>
+                                currently online
+                            </span>
+
+                        </div>
+
                     </div>
 
                 </div>
@@ -415,37 +895,479 @@
 
                 <!-- Bookings -->
 
-                <div class="dashboard-card">
+                <div class="col-12 col-sm-6 col-xl-3">
 
-                    <div class="card-header">
+                    <div class="stat-card">
 
-                        <h3>
-                            Total Bookings
-                        </h3>
+                        <div class="stat-top">
 
-                        <div class="card-icon">
-                            📋
+                            <div>
+
+                                <div class="stat-label">
+                                    Total Bookings
+                                </div>
+
+                                <div class="stat-value">
+                                    0
+                                </div>
+
+                            </div>
+
+                            <div class="stat-icon icon-yellow">
+
+                                <i class="bi bi-calendar-check-fill"></i>
+
+                            </div>
+
                         </div>
 
-                    </div>
 
-                    <div class="card-number">
-                        0
-                    </div>
+                        <div class="stat-bottom">
 
-                    <div class="card-description">
-                        Total taxi bookings
+                            <span class="growth">
+                                <i class="bi bi-arrow-up"></i>
+                                0%
+                            </span>
+
+                            <span>
+                                this month
+                            </span>
+
+                        </div>
+
                     </div>
 
                 </div>
 
 
-            </section>
+                <!-- Revenue -->
+
+                <div class="col-12 col-sm-6 col-xl-3">
+
+                    <div class="stat-card">
+
+                        <div class="stat-top">
+
+                            <div>
+
+                                <div class="stat-label">
+                                    Total Revenue
+                                </div>
+
+                                <div class="stat-value">
+                                    ₹0
+                                </div>
+
+                            </div>
+
+                            <div class="stat-icon icon-green">
+
+                                <i class="bi bi-currency-rupee"></i>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="stat-bottom">
+
+                            <span class="growth">
+                                <i class="bi bi-graph-up"></i>
+                                0%
+                            </span>
+
+                            <span>
+                                this month
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================
+                 MAIN CONTENT ROW
+            ================================= -->
+
+            <div class="row g-4">
+
+
+                <!-- =================================
+                     RECENT BOOKINGS
+                ================================= -->
+
+                <div class="col-12 col-xl-8">
+
+                    <div class="content-card">
+
+
+                        <div class="content-card-header">
+
+                            <div>
+
+                                <h2 class="content-title">
+                                    Recent Bookings
+                                </h2>
+
+                                <div class="content-subtitle">
+                                    Latest taxi booking activity
+                                </div>
+
+                            </div>
+
+
+                            <a
+                                href="#"
+                                class="view-all"
+                            >
+                                View all
+                                <i class="bi bi-arrow-right"></i>
+                            </a>
+
+                        </div>
+
+
+                        <div class="table-responsive">
+
+                            <table class="table booking-table mb-0">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>
+                                            Booking ID
+                                        </th>
+
+                                        <th>
+                                            Customer
+                                        </th>
+
+                                        <th>
+                                            Route
+                                        </th>
+
+                                        <th>
+                                            Fare
+                                        </th>
+
+                                        <th>
+                                            Status
+                                        </th>
+
+                                    </tr>
+
+                                </thead>
+
+
+                                <tbody></tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================
+                     DRIVER AVAILABILITY
+                ================================= -->
+
+                <div class="col-12 col-xl-4">
+
+                    <div class="content-card">
+
+
+                        <div class="content-card-header">
+
+                            <div>
+
+                                <h2 class="content-title">
+                                    Driver Availability
+                                </h2>
+
+                                <div class="content-subtitle">
+                                    Current driver status
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="availability-list">
+
+
+                            <div class="driver-row">
+
+                                <div class="driver-info">
+
+                                    <div class="driver-avatar">
+
+                                        <i class="bi bi-person-fill"></i>
+
+                                    </div>
+
+                                    <div>
+
+                                        <div class="driver-name">
+                                            Available Drivers
+                                        </div>
+
+                                        <div class="driver-car">
+                                            Ready for bookings
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="online-status">
+
+                                    <span class="online-dot"></span>
+
+                                    0
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="driver-row">
+
+                                <div class="driver-info">
+
+                                    <div class="driver-avatar">
+
+                                        <i class="bi bi-car-front"></i>
+
+                                    </div>
+
+                                    <div>
+
+                                        <div class="driver-name">
+                                            On Trip
+                                        </div>
+
+                                        <div class="driver-car">
+                                            Currently serving
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="online-status">
+
+                                    <span class="online-dot"></span>
+
+                                    0
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="driver-row">
+
+                                <div class="driver-info">
+
+                                    <div class="driver-avatar">
+
+                                        <i class="bi bi-moon-fill"></i>
+
+                                    </div>
+
+                                    <div>
+
+                                        <div class="driver-name">
+                                            Offline
+                                        </div>
+
+                                        <div class="driver-car">
+                                            Not currently available
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="offline-status">
+                                    0
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================
+                     BOOKING SUMMARY
+                ================================= -->
+
+                <div class="col-12">
+
+                    <div class="content-card">
+
+
+                        <div class="content-card-header">
+
+                            <div>
+
+                                <h2 class="content-title">
+                                    Booking Overview
+                                </h2>
+
+                                <div class="content-subtitle">
+                                    Current booking distribution
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="summary-body">
+
+                            <div class="row">
+
+
+                                <!-- Completed -->
+
+                                <div class="col-md-4">
+
+                                    <div class="summary-item">
+
+                                        <div class="summary-label">
+
+                                            <span>
+                                                Completed
+                                            </span>
+
+                                            <strong>
+                                                0%
+                                            </strong>
+
+                                        </div>
+
+
+                                        <div class="progress">
+
+                                            <div
+                                                class="progress-bar completed-bar"
+                                                style="width: 0%"
+                                            ></div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- Ongoing -->
+
+                                <div class="col-md-4">
+
+                                    <div class="summary-item">
+
+                                        <div class="summary-label">
+
+                                            <span>
+                                                Ongoing
+                                            </span>
+
+                                            <strong>
+                                                0%
+                                            </strong>
+
+                                        </div>
+
+
+                                        <div class="progress">
+
+                                            <div
+                                                class="progress-bar ongoing-bar"
+                                                style="width: 0%"
+                                            ></div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- Pending -->
+
+                                <div class="col-md-4">
+
+                                    <div class="summary-item">
+
+                                        <div class="summary-label">
+
+                                            <span>
+                                                Pending
+                                            </span>
+
+                                            <strong>
+                                                0%
+                                            </strong>
+
+                                        </div>
+
+
+                                        <div class="progress">
+
+                                            <div
+                                                class="progress-bar pending-bar"
+                                                style="width: 0%"
+                                            ></div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
 
         </main>
 
     </div>
 
 
+    <!-- Bootstrap JS -->
 
-{% endblock %}
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    ></script>
+
+
+</body>
+
+</html>
