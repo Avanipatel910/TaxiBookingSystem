@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User as AdminUser
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
+from django.contrib.auth.hashers import check_password
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
@@ -204,7 +205,39 @@ def user_register_success(request):
     )
 
 def user_login(request):
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip().lower()
+        password = request.POST.get('password', '')
+
+        if not email or not password:
+            return render(request, 'auth/user_login.html', {
+                'error': 'Email and password are required.',
+                'email': email,
+            })
+
+        try:
+            customer = CustomerUser.objects.get(email=email)
+        except CustomerUser.DoesNotExist:
+            return render(request, 'auth/user_login.html', {
+                'error': 'Invalid email or password.',
+                'email': email,
+            })
+
+        if not check_password(password, customer.password):
+            return render(request, 'auth/user_login.html', {
+                'error': 'Invalid email or password.',
+                'email': email,
+            })
+
+        # Store logged-in customer in session
+        request.session['customer_id'] = customer.id
+        request.session['customer_name'] = customer.name
+        request.session['customer_email'] = customer.email
+
+        return redirect('user_dashboard')
+
     return render(request, 'auth/user_login.html')
+
 
 def dashboard(request):
 
@@ -223,6 +256,26 @@ def dashboard(request):
         request,
         'admin/dashboard.html'
     )
+
+def user_dashboard(request):
+    customer_id = request.session.get('customer_id')
+
+    if not customer_id:
+        return redirect('user_login')
+
+    customer = get_object_or_404(
+        CustomerUser,
+        id=customer_id
+    )
+
+    return render(request, 'user/dashboard.html', {
+        'customer': customer
+    })
+
+
+def user_logout(request):
+    request.session.flush()
+    return redirect('user_login')
 
 def admin_forgot_password(request):
 

@@ -19,6 +19,8 @@ from core.views import (
     user_register,
     user_register_success,
     user_login,
+    user_dashboard,
+    user_logout,
 )
 
 
@@ -28,6 +30,11 @@ urlpatterns = [
     '',
     user_login,
     name='user_login'
+),
+path(
+    'logout/',
+    user_logout,
+    name='user_logout'
 ),
     path(
         'admin-login/',
@@ -48,7 +55,7 @@ urlpatterns = [
     ),
 
     path(
-        'logout/',
+        'admin-logout/',
         admin_logout,
         name='admin_logout'
     ),
@@ -63,6 +70,14 @@ path(
     user_login,
     name='user_login'
 ),
+path(
+    'dashboard/',
+    user_dashboard,
+    name='user_dashboard'
+),
+
+
+
     path(
         'dashboard/',
         dashboard,
