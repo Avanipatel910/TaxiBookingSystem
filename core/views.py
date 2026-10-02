@@ -203,6 +203,9 @@ def user_register_success(request):
         'auth/register_success.html'
     )
 
+def user_login(request):
+    return render(request, 'auth/user_login.html')
+
 def dashboard(request):
 
     if not request.user.is_authenticated or not request.user.is_staff:

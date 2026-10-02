@@ -18,11 +18,17 @@ from core.views import (
     bookings,
     user_register,
     user_register_success,
+    user_login,
 )
 
 
 urlpatterns = [
 
+    path(
+    '',
+    user_login,
+    name='user_login'
+),
     path(
         'admin-login/',
         admin_login,
@@ -51,6 +57,11 @@ urlpatterns = [
     'register/success/',
     user_register_success,
     name='user_register_success'
+),
+path(
+    'login/',
+    user_login,
+    name='user_login'
 ),
     path(
         'dashboard/',
