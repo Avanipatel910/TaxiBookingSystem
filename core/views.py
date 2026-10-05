@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.core.files.storage import default_storage
 from django.core.files import File
-
+from datetime import datetime, timedelta
 from .models import AdminProfile, User as CustomerUser, Driver
 
 import random
@@ -261,9 +261,13 @@ def user_forgot_password(request):
         # Generate a 6-digit OTP
         otp = str(random.randint(100000, 999999))
 
-        # Store OTP information in session
+        # OTP validity: 5 minutes
+        otp_created_at = datetime.now()
+
+        # Store OTP temporarily in session
         request.session['reset_otp'] = otp
         request.session['reset_email'] = email
+        request.session['otp_created_at'] = otp_created_at.isoformat()
         request.session['otp_verified'] = False
 
         # Send OTP using Django console email backend
@@ -293,8 +297,9 @@ def user_verify_otp(request):
 
         saved_otp = request.session.get('reset_otp')
         reset_email = request.session.get('reset_email')
+        otp_created_at = request.session.get('otp_created_at')
 
-        if not saved_otp or not reset_email:
+        if not saved_otp or not reset_email or not otp_created_at:
             return render(request, 'auth/user_verify_otp.html', {
                 'error': 'Your OTP session has expired. Please request a new OTP.'
             })
@@ -305,6 +310,30 @@ def user_verify_otp(request):
                 'email': reset_email,
             })
 
+        # Convert stored timestamp back to datetime
+        try:
+            created_time = datetime.fromisoformat(otp_created_at)
+        except (ValueError, TypeError):
+            request.session.pop('reset_otp', None)
+            request.session.pop('otp_created_at', None)
+
+            return render(request, 'auth/user_verify_otp.html', {
+                'error': 'Invalid OTP session. Please request a new OTP.',
+                'email': reset_email,
+            })
+
+        # Check whether OTP is older than 5 minutes
+        if datetime.now() - created_time > timedelta(minutes=5):
+
+            request.session.pop('reset_otp', None)
+            request.session.pop('otp_created_at', None)
+
+            return render(request, 'auth/user_verify_otp.html', {
+                'error': 'Your OTP has expired. Please request a new OTP.',
+                'email': reset_email,
+            })
+
+        # Check OTP
         if entered_otp != saved_otp:
             return render(request, 'auth/user_verify_otp.html', {
                 'error': 'Invalid OTP. Please try again.',
@@ -355,7 +384,9 @@ def user_reset_password(request):
         # Clear password reset session data
         request.session.pop('reset_otp', None)
         request.session.pop('reset_email', None)
+        request.session.pop('otp_created_at', None)
         request.session.pop('otp_verified', None)
+        
 
         return redirect('user_login')
 
