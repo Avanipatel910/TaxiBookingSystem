@@ -19,6 +19,7 @@ from core.views import (
     user_register,
     user_register_success,
     user_login,
+    user_forgot_password,
     user_dashboard,
     user_logout,
 )
@@ -69,6 +70,11 @@ path(
     'login/',
     user_login,
     name='user_login'
+),
+path(
+    'forgot-password/',
+    user_forgot_password,
+    name='user_forgot_password'
 ),
 path(
     'dashboard/',

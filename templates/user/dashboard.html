@@ -1,31 +1,1039 @@
 {% extends 'base.html' %}
 
-{% block title %}My Dashboard{% endblock %}
+{% block title %}Customer Dashboard | Taxi Booking{% endblock %}
+
+{% block extra_css %}
+
+<style>
+
+/* ================================
+   CUSTOMER DASHBOARD
+================================ */
+
+body {
+    background: #f5f7fb;
+}
+
+.customer-dashboard {
+    min-height: calc(100vh - 70px);
+    background: #f5f7fb;
+}
+
+/* ================================
+   SIDEBAR
+================================ */
+
+.customer-sidebar {
+    width: 250px;
+    min-height: calc(100vh - 70px);
+    background: #ffffff;
+    border-right: 1px solid #e8ebf0;
+    position: fixed;
+    left: 0;
+    top: 70px;
+    bottom: 0;
+    z-index: 100;
+    padding: 22px 15px;
+}
+
+.sidebar-section-title {
+    font-size: 10px;
+    font-weight: 800;
+    color: #9aa1ad;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 0 12px;
+    margin: 8px 0 12px;
+}
+
+.customer-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.customer-nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 13px;
+    border-radius: 9px;
+    color: #626b78;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all .2s ease;
+}
+
+.customer-nav a i {
+    font-size: 17px;
+    width: 20px;
+    text-align: center;
+}
+
+.customer-nav a:hover {
+    background: #f4f5f7;
+    color: #111827;
+}
+
+.customer-nav a.active {
+    background: #111827;
+    color: #ffffff;
+}
+
+.customer-nav a.active i {
+    color: #ffffff;
+}
+
+.sidebar-divider {
+    height: 1px;
+    background: #edf0f3;
+    margin: 22px 5px;
+}
+
+.sidebar-account {
+    background: #f7f8fa;
+    border: 1px solid #e9ecf0;
+    border-radius: 12px;
+    padding: 13px;
+    margin-top: 18px;
+}
+
+.sidebar-account-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #111827;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.sidebar-account-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #202631;
+}
+
+.sidebar-account-email {
+    font-size: 10px;
+    color: #8a929d;
+    max-width: 145px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ================================
+   MAIN CONTENT
+================================ */
+
+.customer-content {
+    margin-left: 250px;
+    padding: 30px;
+}
+
+.dashboard-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+
+.dashboard-heading h1 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #171c24;
+    margin: 0 0 5px;
+    letter-spacing: -.5px;
+}
+
+.dashboard-heading p {
+    margin: 0;
+    color: #7d8693;
+    font-size: 13px;
+}
+
+.header-profile {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.header-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #111827;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+}
+
+.header-user-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #202631;
+}
+
+.header-user-role {
+    font-size: 11px;
+    color: #9299a3;
+}
+
+/* ================================
+   QUICK BOOKING CARD
+================================ */
+
+.booking-card {
+    background: #111827;
+    border-radius: 16px;
+    padding: 25px;
+    color: #ffffff;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.booking-card::after {
+    content: "";
+    position: absolute;
+    width: 230px;
+    height: 230px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.08);
+    right: -80px;
+    top: -100px;
+}
+
+.booking-card-content {
+    position: relative;
+    z-index: 2;
+}
+
+.booking-card h2 {
+    font-size: 21px;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.booking-card p {
+    color: #b8bec8;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+.booking-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffff;
+    color: #111827;
+    text-decoration: none;
+    padding: 10px 17px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    transition: .2s ease;
+}
+
+.booking-btn:hover {
+    background: #f1f2f4;
+    color: #111827;
+    transform: translateY(-1px);
+}
+
+.booking-icon {
+    position: absolute;
+    right: 65px;
+    bottom: 25px;
+    font-size: 78px;
+    color: rgba(255,255,255,.08);
+    transform: rotate(-8deg);
+}
+
+/* ================================
+   STAT CARDS
+================================ */
+
+.stat-card {
+    background: #ffffff;
+    border: 1px solid #e7eaf0;
+    border-radius: 14px;
+    padding: 20px;
+    height: 100%;
+    transition: .2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(17,24,39,.06);
+}
+
+.stat-icon {
+    width: 43px;
+    height: 43px;
+    border-radius: 10px;
+    background: #f1f3f5;
+    color: #111827;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    margin-bottom: 15px;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #858e9a;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.stat-value {
+    font-size: 23px;
+    color: #171c24;
+    font-weight: 800;
+}
+
+/* ================================
+   SECTION
+================================ */
+
+.dashboard-section {
+    margin-top: 28px;
+}
+
+.section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.section-heading h3 {
+    font-size: 17px;
+    font-weight: 800;
+    color: #202631;
+    margin: 0;
+}
+
+.section-heading p {
+    color: #8a929d;
+    font-size: 12px;
+    margin: 3px 0 0;
+}
+
+/* ================================
+   SERVICE CARDS
+================================ */
+
+.service-card {
+    background: #ffffff;
+    border: 1px solid #e7eaf0;
+    border-radius: 14px;
+    padding: 21px;
+    height: 100%;
+    transition: .2s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(17,24,39,.06);
+}
+
+.service-icon {
+    width: 45px;
+    height: 45px;
+    background: #f1f3f5;
+    color: #111827;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    margin-bottom: 14px;
+}
+
+.service-card h5 {
+    font-size: 14px;
+    font-weight: 800;
+    color: #202631;
+    margin-bottom: 6px;
+}
+
+.service-card p {
+    font-size: 12px;
+    line-height: 1.6;
+    color: #818a96;
+    margin-bottom: 15px;
+}
+
+.service-link {
+    color: #111827;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.service-link i {
+    margin-left: 5px;
+    transition: .2s;
+}
+
+.service-link:hover i {
+    margin-left: 9px;
+}
+
+/* ================================
+   ACCOUNT PANEL
+================================ */
+
+.account-card {
+    background: #ffffff;
+    border: 1px solid #e7eaf0;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.account-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 19px;
+    border-bottom: 1px solid #eef0f3;
+}
+
+.account-row:last-child {
+    border-bottom: 0;
+}
+
+.account-label {
+    font-size: 11px;
+    color: #8a929d;
+    font-weight: 600;
+}
+
+.account-value {
+    font-size: 13px;
+    color: #202631;
+    font-weight: 700;
+}
+
+/* ================================
+   EMPTY BOOKINGS
+================================ */
+
+.empty-card {
+    background: #ffffff;
+    border: 1px solid #e7eaf0;
+    border-radius: 14px;
+    padding: 38px 20px;
+    text-align: center;
+}
+
+.empty-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 14px;
+    background: #f1f3f5;
+    color: #727b87;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 13px;
+    font-size: 22px;
+}
+
+.empty-card h5 {
+    font-size: 14px;
+    font-weight: 800;
+    color: #303640;
+    margin-bottom: 5px;
+}
+
+.empty-card p {
+    color: #8a929d;
+    font-size: 12px;
+    margin: 0;
+}
+
+/* ================================
+   LOGOUT
+================================ */
+
+.logout-link {
+    color: #dc3545 !important;
+}
+
+.logout-link:hover {
+    background: #fff1f2 !important;
+    color: #dc3545 !important;
+}
+
+/* ================================
+   MOBILE
+================================ */
+
+@media (max-width: 991px) {
+
+    .customer-sidebar {
+        width: 215px;
+    }
+
+    .customer-content {
+        margin-left: 215px;
+        padding: 22px;
+    }
+
+    .booking-icon {
+        right: 25px;
+    }
+}
+
+@media (max-width: 767px) {
+
+    .customer-sidebar {
+        position: relative;
+        width: 100%;
+        min-height: auto;
+        top: auto;
+        padding: 12px;
+        border-right: 0;
+        border-bottom: 1px solid #e8ebf0;
+    }
+
+    .customer-nav {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .sidebar-account {
+        display: none;
+    }
+
+    .sidebar-section-title {
+        display: none;
+    }
+
+    .sidebar-divider {
+        display: none;
+    }
+
+    .customer-content {
+        margin-left: 0;
+        padding: 20px 15px 40px;
+    }
+
+    .dashboard-header {
+        align-items: flex-start;
+    }
+
+    .header-profile {
+        display: none;
+    }
+
+    .dashboard-heading h1 {
+        font-size: 22px;
+    }
+
+    .booking-card {
+        padding: 20px;
+    }
+
+    .booking-icon {
+        display: none;
+    }
+}
+
+</style>
+
+{% endblock %}
+
 
 {% block content %}
 
-<div class="container py-5">
+<div class="customer-dashboard">
 
-    <div class="card border-0 shadow-sm p-4">
+    <!-- =================================
+         SIDEBAR
+    ================================== -->
 
-        <h2 class="fw-bold">
-            Welcome, {{ customer.name }}
-        </h2>
+    <aside class="customer-sidebar">
 
-        <p class="text-muted">
-            Email: {{ customer.email }}
-        </p>
+        <div class="sidebar-section-title">
+            Customer Menu
+        </div>
 
-        <p class="text-muted">
-            Mobile: {{ customer.mobile }}
-        </p>
+        <nav class="customer-nav">
 
-        <a href="{% url 'user_logout' %}"
-           class="btn btn-danger">
-            Logout
-        </a>
+            <a href="{% url 'user_dashboard' %}" class="active">
+                <i class="bi bi-grid-1x2-fill"></i>
+                <span>Dashboard</span>
+            </a>
 
-    </div>
+            <a href="#">
+                <i class="bi bi-car-front-fill"></i>
+                <span>Book Taxi</span>
+            </a>
+
+            <a href="#">
+                <i class="bi bi-receipt"></i>
+                <span>My Bookings</span>
+            </a>
+
+            <a href="#">
+                <i class="bi bi-person"></i>
+                <span>My Profile</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-divider"></div>
+
+        <div class="sidebar-section-title">
+            Account
+        </div>
+
+        <nav class="customer-nav">
+
+            <a href="{% url 'user_logout' %}" class="logout-link">
+                <i class="bi bi-box-arrow-right"></i>
+                <span>Logout</span>
+            </a>
+
+        </nav>
+
+        <!-- Customer mini profile -->
+
+        <div class="sidebar-account">
+
+            <div class="d-flex align-items-center gap-2">
+
+                <div class="sidebar-account-avatar">
+                    {{ customer.name|first|upper }}
+                </div>
+
+                <div>
+
+                    <div class="sidebar-account-name">
+                        {{ customer.name }}
+                    </div>
+
+                    <div class="sidebar-account-email">
+                        {{ customer.email }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =================================
+         MAIN CONTENT
+    ================================== -->
+
+    <main class="customer-content">
+
+        <!-- Header -->
+
+        <div class="dashboard-header">
+
+            <div class="dashboard-heading">
+
+                <h1>
+                    Welcome, {{ customer.name }}
+                </h1>
+
+                <p>
+                    Manage your taxi bookings and account from here.
+                </p>
+
+            </div>
+
+
+            <div class="header-profile">
+
+                <div class="text-end">
+
+                    <div class="header-user-name">
+                        {{ customer.name }}
+                    </div>
+
+                    <div class="header-user-role">
+                        Customer
+                    </div>
+
+                </div>
+
+                <div class="header-avatar">
+                    {{ customer.name|first|upper }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================
+             QUICK BOOKING
+        ================================== -->
+
+        <div class="booking-card">
+
+            <div class="booking-card-content">
+
+                <h2>
+                    Need a taxi?
+                </h2>
+
+                <p>
+                    Book your next ride quickly and conveniently.
+                </p>
+
+                <a href="#" class="booking-btn">
+
+                    <i class="bi bi-car-front-fill"></i>
+
+                    Book a Taxi
+
+                </a>
+
+            </div>
+
+            <i class="bi bi-car-front-fill booking-icon"></i>
+
+        </div>
+
+
+        <!-- =================================
+             ACCOUNT OVERVIEW
+        ================================== -->
+
+        <div class="row g-3">
+
+            <div class="col-md-4">
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        <i class="bi bi-person-check"></i>
+                    </div>
+
+                    <div class="stat-label">
+                        Account
+                    </div>
+
+                    <div class="stat-value">
+                        Active
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        <i class="bi bi-envelope"></i>
+                    </div>
+
+                    <div class="stat-label">
+                        Email
+                    </div>
+
+                    <div class="stat-value"
+                         style="font-size:14px;word-break:break-word;">
+                        {{ customer.email }}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="col-md-4">
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        <i class="bi bi-telephone"></i>
+                    </div>
+
+                    <div class="stat-label">
+                        Mobile
+                    </div>
+
+                    <div class="stat-value">
+                        {{ customer.mobile }}
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================
+             SERVICES
+        ================================== -->
+
+        <div class="dashboard-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h3>
+                        Quick Actions
+                    </h3>
+
+                    <p>
+                        Access your frequently used services.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+
+                    <div class="service-card">
+
+                        <div class="service-icon">
+                            <i class="bi bi-car-front-fill"></i>
+                        </div>
+
+                        <h5>
+                            Book a Taxi
+                        </h5>
+
+                        <p>
+                            Enter your pickup and destination
+                            to request a taxi.
+                        </p>
+
+                        <a href="#" class="service-link">
+                            Start booking
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <div class="service-card">
+
+                        <div class="service-icon">
+                            <i class="bi bi-receipt"></i>
+                        </div>
+
+                        <h5>
+                            My Bookings
+                        </h5>
+
+                        <p>
+                            View your previous and upcoming
+                            taxi booking information.
+                        </p>
+
+                        <a href="#" class="service-link">
+                            View bookings
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-4">
+
+                    <div class="service-card">
+
+                        <div class="service-icon">
+                            <i class="bi bi-person-gear"></i>
+                        </div>
+
+                        <h5>
+                            My Profile
+                        </h5>
+
+                        <p>
+                            View and manage your personal
+                            customer information.
+                        </p>
+
+                        <a href="#" class="service-link">
+                            View profile
+                            <i class="bi bi-arrow-right"></i>
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================
+             BOOKINGS
+        ================================== -->
+
+        <div class="dashboard-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h3>
+                        Recent Bookings
+                    </h3>
+
+                    <p>
+                        Your latest taxi booking activity.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!--
+                No booking model is connected yet,
+                so we intentionally do not show fake
+                booking records here.
+            -->
+
+            <div class="empty-card">
+
+                <div class="empty-icon">
+                    <i class="bi bi-car-front"></i>
+                </div>
+
+                <h5>
+                    No bookings yet
+                </h5>
+
+                <p>
+                    Your taxi bookings will appear here
+                    once you make your first booking.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================
+             ACCOUNT INFORMATION
+        ================================== -->
+
+        <div class="dashboard-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h3>
+                        Account Information
+                    </h3>
+
+                    <p>
+                        Your registered customer details.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="account-card">
+
+                <div class="account-row">
+
+                    <span class="account-label">
+                        Full Name
+                    </span>
+
+                    <span class="account-value">
+                        {{ customer.name }}
+                    </span>
+
+                </div>
+
+
+                <div class="account-row">
+
+                    <span class="account-label">
+                        Email Address
+                    </span>
+
+                    <span class="account-value">
+                        {{ customer.email }}
+                    </span>
+
+                </div>
+
+
+                <div class="account-row">
+
+                    <span class="account-label">
+                        Mobile Number
+                    </span>
+
+                    <span class="account-value">
+                        {{ customer.mobile }}
+                    </span>
+
+                </div>
+
+
+                <div class="account-row">
+
+                    <span class="account-label">
+                        Account Status
+                    </span>
+
+                    <span class="account-value">
+                        Active
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================
+             FOOTER SPACE
+        ================================== -->
+
+        <div style="height:30px;"></div>
+
+    </main>
 
 </div>
 

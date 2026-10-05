@@ -238,6 +238,30 @@ def user_login(request):
 
     return render(request, 'auth/user_login.html')
 
+def user_forgot_password(request):
+
+    if request.method == 'POST':
+
+        email = request.POST.get('email', '').strip().lower()
+
+        if not email:
+            return render(request, 'auth/forgot_password.html', {
+                'error': 'Please enter your email address.',
+                'email': email,
+            })
+
+        if not CustomerUser.objects.filter(email=email).exists():
+            return render(request, 'auth/forgot_password.html', {
+                'error': 'No account was found with this email address.',
+                'email': email,
+            })
+
+        return render(request, 'auth/forgot_password.html', {
+            'success': 'Email verified successfully. Password reset can continue.',
+            'email': email,
+        })
+
+    return render(request, 'auth/forgot_password.html')
 
 def dashboard(request):
 
@@ -272,9 +296,9 @@ def user_dashboard(request):
         'customer': customer
     })
 
-
 def user_logout(request):
     request.session.flush()
+
     return redirect('user_login')
 
 def admin_forgot_password(request):
