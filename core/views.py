@@ -250,18 +250,116 @@ def user_forgot_password(request):
                 'email': email,
             })
 
-        if not CustomerUser.objects.filter(email=email).exists():
+        try:
+            customer = CustomerUser.objects.get(email=email)
+        except CustomerUser.DoesNotExist:
             return render(request, 'auth/forgot_password.html', {
                 'error': 'No account was found with this email address.',
                 'email': email,
             })
 
-        return render(request, 'auth/forgot_password.html', {
-            'success': 'Email verified successfully. Password reset can continue.',
-            'email': email,
-        })
+        # Generate a 6-digit OTP
+        otp = str(random.randint(100000, 999999))
+
+        # Store OTP information in session
+        request.session['reset_otp'] = otp
+        request.session['reset_email'] = email
+        request.session['otp_verified'] = False
+
+        # Send OTP using Django console email backend
+        send_mail(
+            subject='Taxi Booking - Password Reset OTP',
+            message=(
+                f'Hello {customer.name},\n\n'
+                f'Your password reset OTP is: {otp}\n\n'
+                f'Please use this OTP to reset your password.\n\n'
+                f'If you did not request a password reset, '
+                f'please ignore this email.'
+            ),
+            from_email='noreply@taxibooking.com',
+            recipient_list=[email],
+            fail_silently=False,
+        )
+
+        return redirect('user_verify_otp')
 
     return render(request, 'auth/forgot_password.html')
+
+def user_verify_otp(request):
+
+    if request.method == 'POST':
+
+        entered_otp = request.POST.get('otp', '').strip()
+
+        saved_otp = request.session.get('reset_otp')
+        reset_email = request.session.get('reset_email')
+
+        if not saved_otp or not reset_email:
+            return render(request, 'auth/user_verify_otp.html', {
+                'error': 'Your OTP session has expired. Please request a new OTP.'
+            })
+
+        if not entered_otp:
+            return render(request, 'auth/user_verify_otp.html', {
+                'error': 'Please enter the OTP.',
+                'email': reset_email,
+            })
+
+        if entered_otp != saved_otp:
+            return render(request, 'auth/user_verify_otp.html', {
+                'error': 'Invalid OTP. Please try again.',
+                'email': reset_email,
+            })
+
+        # OTP verified successfully
+        request.session['otp_verified'] = True
+
+        return redirect('user_reset_password')
+
+    return render(request, 'auth/user_verify_otp.html')
+
+def user_reset_password(request):
+
+    reset_email = request.session.get('reset_email')
+    otp_verified = request.session.get('otp_verified', False)
+
+    # User must verify OTP before resetting password
+    if not reset_email or not otp_verified:
+        return redirect('user_forgot_password')
+
+    if request.method == 'POST':
+
+        password = request.POST.get('password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+
+        if not password or not confirm_password:
+            return render(request, 'auth/user_reset_password.html', {
+                'error': 'Both password fields are required.'
+            })
+
+        if password != confirm_password:
+            return render(request, 'auth/user_reset_password.html', {
+                'error': 'Passwords do not match.'
+            })
+
+        # Find customer account
+        try:
+            customer = CustomerUser.objects.get(email=reset_email)
+        except CustomerUser.DoesNotExist:
+            return redirect('user_forgot_password')
+
+        # Save new password
+        customer.password = password
+        customer.save()
+
+        # Clear password reset session data
+        request.session.pop('reset_otp', None)
+        request.session.pop('reset_email', None)
+        request.session.pop('otp_verified', None)
+
+        return redirect('user_login')
+
+    return render(request, 'auth/user_reset_password.html')
 
 def dashboard(request):
 

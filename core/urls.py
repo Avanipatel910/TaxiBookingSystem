@@ -20,6 +20,8 @@ from core.views import (
     user_register_success,
     user_login,
     user_forgot_password,
+    user_verify_otp,
+    user_reset_password,
     user_dashboard,
     user_logout,
 )
@@ -75,6 +77,12 @@ path(
     'forgot-password/',
     user_forgot_password,
     name='user_forgot_password'
+),
+path('user-verify-otp/', user_verify_otp, name='user_verify_otp'),
+path(
+    'user-reset-password/',
+    user_reset_password,
+    name='user_reset_password'
 ),
 path(
     'dashboard/',

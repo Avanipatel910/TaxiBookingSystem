@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
 from dotenv import load_dotenv
+import random
 
+from django.core.mail import send_mail
 load_dotenv()
 from pathlib import Path
 
@@ -127,7 +129,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
