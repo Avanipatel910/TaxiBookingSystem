@@ -349,10 +349,11 @@ def user_verify_otp(request):
 
 def user_reset_password(request):
 
+    # Get password-reset session data
     reset_email = request.session.get('reset_email')
     otp_verified = request.session.get('otp_verified', False)
 
-    # User must verify OTP before resetting password
+    # User cannot access reset page without successful OTP verification
     if not reset_email or not otp_verified:
         return redirect('user_forgot_password')
 
@@ -361,11 +362,13 @@ def user_reset_password(request):
         password = request.POST.get('password', '')
         confirm_password = request.POST.get('confirm_password', '')
 
+        # Validate password fields
         if not password or not confirm_password:
             return render(request, 'auth/user_reset_password.html', {
                 'error': 'Both password fields are required.'
             })
 
+        # Check password confirmation
         if password != confirm_password:
             return render(request, 'auth/user_reset_password.html', {
                 'error': 'Passwords do not match.'
@@ -377,7 +380,7 @@ def user_reset_password(request):
         except CustomerUser.DoesNotExist:
             return redirect('user_forgot_password')
 
-        # Save new password
+        # Update password
         customer.password = password
         customer.save()
 
@@ -386,12 +389,11 @@ def user_reset_password(request):
         request.session.pop('reset_email', None)
         request.session.pop('otp_created_at', None)
         request.session.pop('otp_verified', None)
-        
 
+        # Send user back to login
         return redirect('user_login')
 
     return render(request, 'auth/user_reset_password.html')
-
 def dashboard(request):
 
     if not request.user.is_authenticated or not request.user.is_staff:
