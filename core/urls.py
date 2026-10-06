@@ -24,6 +24,7 @@ from core.views import (
     user_reset_password,
     user_dashboard,
     user_logout,
+    driver_register,
 )
 
 
@@ -83,7 +84,7 @@ path(
     'user-reset-password/',
     user_reset_password,
     name='user_reset_password'
-),
+),  
 path(
     'dashboard/',
     user_dashboard,
@@ -115,7 +116,11 @@ path(
         reset_password,
         name='reset_password'
     ),
-
+    path(
+    'driver-register/',
+    driver_register,
+    name='driver_register'
+),
     path(
         'drivers/',
         drivers,

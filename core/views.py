@@ -1295,6 +1295,71 @@ def verify_registration_otp(request):
         }
     )
 
+def driver_register(request):
+
+    if request.method == 'POST':
+
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip().lower()
+        license_number = request.POST.get('license_number', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        password = request.POST.get('password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+
+        # Required fields
+        if not name or not email or not license_number or not phone or not password or not confirm_password:
+            return render(request, 'driver/driver_register.html', {
+                'error': 'All fields are required.',
+                'name': name,
+                'email': email,
+                'license_number': license_number,
+                'phone': phone,
+            })
+
+        # Password confirmation
+        if password != confirm_password:
+            return render(request, 'driver/driver_register.html', {
+                'error': 'Passwords do not match.',
+                'name': name,
+                'email': email,
+                'license_number': license_number,
+                'phone': phone,
+            })
+
+        # Email already exists
+        if Driver.objects.filter(email=email).exists():
+            return render(request, 'driver/driver_register.html', {
+                'error': 'An account with this email already exists.',
+                'name': name,
+                'email': email,
+                'license_number': license_number,
+                'phone': phone,
+            })
+
+        # License number already exists
+        if Driver.objects.filter(license_number=license_number).exists():
+            return render(request, 'driver/driver_register.html', {
+                'error': 'This license number is already registered.',
+                'name': name,
+                'email': email,
+                'license_number': license_number,
+                'phone': phone,
+            })
+
+        # Create driver
+        Driver.objects.create(
+            name=name,
+            email=email,
+            license_number=license_number,
+            mobile=phone,
+            password=password
+        )
+
+        return render(request, 'driver/driver_register.html', {
+            'success': 'Driver registration completed successfully.'
+        })
+
+    return render(request, 'driver/driver_register.html')
 
 def drivers(request):
 
@@ -1329,10 +1394,6 @@ def drivers(request):
         }
     )
 
-
-# =========================================================
-# DRIVER DETAIL
-# =========================================================
 
 def driver_detail(request, driver_id):
 
