@@ -10,6 +10,9 @@ from core.views import (
     verify_registration_otp,
     drivers,
     driver_detail,
+    driver_login,
+    driver_dashboard,
+    driver_logout,
     delete_driver,
     users,
     user_detail,
@@ -121,6 +124,11 @@ path(
     driver_register,
     name='driver_register'
 ),
+
+path('driver-login/', driver_login, name='driver_login'),
+path('driver-dashboard/', driver_dashboard, name='driver_dashboard'),
+path('driver-logout/', driver_logout, name='driver_logout'),
+
     path(
         'drivers/',
         drivers,

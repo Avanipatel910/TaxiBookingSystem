@@ -1384,6 +1384,75 @@ def driver_register(request):
 
     return render(request, 'driver/driver_register.html')
 
+
+
+def driver_login(request):
+    if request.session.get('driver_id'):
+        return redirect('driver_dashboard')
+
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip().lower()
+        password = request.POST.get('password', '')
+
+        if not email or not password:
+            return render(request, 'driver/driver_login.html', {
+                'error': 'Please enter both email and password.',
+                'email': email,
+            })
+
+        try:
+            driver = Driver.objects.get(email=email)
+        except Driver.DoesNotExist:
+            return render(request, 'driver/driver_login.html', {
+                'error': 'Invalid email or password.',
+                'email': email,
+            })
+
+        if not check_password(password, driver.password):
+            return render(request, 'driver/driver_login.html', {
+                'error': 'Invalid email or password.',
+                'email': email,
+            })
+
+        # Start a driver session after successful authentication.
+        request.session.cycle_key()
+        request.session['driver_id'] = driver.id
+        request.session['driver_name'] = driver.name
+        request.session['driver_email'] = driver.email
+
+        return redirect('driver_dashboard')
+
+    return render(request, 'driver/driver_login.html')
+
+
+def driver_dashboard(request):
+    driver_id = request.session.get('driver_id')
+
+    if not driver_id:
+        return redirect('driver_login')
+
+    try:
+        driver = Driver.objects.get(id=driver_id)
+    except Driver.DoesNotExist:
+        request.session.pop('driver_id', None)
+        request.session.pop('driver_name', None)
+        request.session.pop('driver_email', None)
+        return redirect('driver_login')
+
+    return render(request, 'driver/driver_dashboard.html', {
+        'driver': driver,
+    })
+
+
+def driver_logout(request):
+    request.session.pop('driver_id', None)
+    request.session.pop('driver_name', None)
+    request.session.pop('driver_email', None)
+
+    return redirect('driver_login')
+
+
+
 def drivers(request):
 
     if not request.user.is_authenticated or not request.user.is_staff:
