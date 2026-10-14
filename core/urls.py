@@ -13,6 +13,9 @@ from core.views import (
     driver_login,
     driver_dashboard,
     driver_logout,
+    driver_forgot_password,
+    driver_reset_password,
+    driver_verify_otp,
     delete_driver,
     users,
     user_detail,
@@ -128,7 +131,21 @@ path(
 path('driver-login/', driver_login, name='driver_login'),
 path('driver-dashboard/', driver_dashboard, name='driver_dashboard'),
 path('driver-logout/', driver_logout, name='driver_logout'),
-
+path(
+    'driver-forgot-password/',
+    driver_forgot_password,
+    name='driver_forgot_password'
+),
+path(
+    'driver-verify-otp/',
+    driver_verify_otp,
+    name='driver_verify_otp'
+),
+path(
+    'driver-reset-password/',
+    driver_reset_password,
+    name='driver_reset_password'
+),
     path(
         'drivers/',
         drivers,

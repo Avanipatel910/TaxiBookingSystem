@@ -3,6 +3,7 @@ from django.contrib.auth.models import User as AdminUser
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.contrib.auth.hashers import check_password
+from django.utils import timezone
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -1452,7 +1453,142 @@ def driver_logout(request):
 
     return redirect('driver_login')
 
+def driver_forgot_password(request):
+    if request.session.get('driver_id'):
+        return redirect('driver_dashboard')
 
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip().lower()
+
+        if not email:
+            return render(request, 'driver/forgot_password.html', {
+                'error': 'Please enter your registered email address.',
+                'email': email,
+            })
+
+        try:
+            driver = Driver.objects.get(email__iexact=email)
+        except Driver.DoesNotExist:
+            return render(request, 'driver/forgot_password.html', {
+                'error': 'No driver account was found with that email.',
+                'email': email,
+            })
+
+        otp = str(random.randint(100000, 999999))
+
+        try:
+            send_mail(
+                'TaxiGo Driver Password Reset OTP',
+                f'Hello {driver.name}, your password reset OTP is {otp}. '
+                'It expires in 5 minutes. If you did not request this, '
+                'please ignore this email.',
+                None,
+                [driver.email],
+                fail_silently=False,
+            )
+        except Exception:
+            return render(request, 'driver/forgot_password.html', {
+                'error': 'Unable to send the OTP. Please try again.',
+                'email': email,
+            })
+
+        request.session['driver_reset_otp'] = otp
+        request.session['driver_reset_email'] = driver.email
+        request.session['driver_otp_created_at'] = timezone.now().timestamp()
+        request.session['driver_otp_verified'] = False
+
+        return redirect('driver_verify_otp')
+
+    return render(request, 'driver/forgot_password.html')
+
+
+def driver_verify_otp(request):
+    email = request.session.get('driver_reset_email')
+    if not email:
+        return redirect('driver_forgot_password')
+
+    if request.method == 'POST':
+        entered_otp = request.POST.get('otp', '').strip()
+        stored_otp = request.session.get('driver_reset_otp')
+        created_at = request.session.get('driver_otp_created_at')
+
+        if not stored_otp or not created_at:
+            return render(request, 'driver/verify_otp.html', {
+                'error': 'Your OTP session has expired. Request a new OTP.'
+            })
+
+        if timezone.now().timestamp() - float(created_at) > 300:
+            for key in (
+                'driver_reset_otp',
+                'driver_reset_email',
+                'driver_otp_created_at',
+                'driver_otp_verified',
+            ):
+                request.session.pop(key, None)
+
+            return render(request, 'driver/forgot_password.html', {
+                'error': 'Your OTP expired. Please request a new one.',
+                'email': email,
+            })
+
+        if entered_otp != stored_otp:
+            return render(request, 'driver/verify_otp.html', {
+                'error': 'Invalid OTP. Please try again.'
+            })
+
+        request.session['driver_otp_verified'] = True
+        return redirect('driver_reset_password')
+
+    return render(request, 'driver/verify_otp.html')
+
+
+def driver_reset_password(request):
+    if (
+        not request.session.get('driver_reset_email')
+        or not request.session.get('driver_otp_verified')
+    ):
+        return redirect('driver_forgot_password')
+
+    if request.method == 'POST':
+        password = request.POST.get('password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+
+        if not password or not confirm_password:
+            return render(request, 'driver/reset_password.html', {
+                'error': 'Please fill in both password fields.'
+            })
+
+        if password != confirm_password:
+            return render(request, 'driver/reset_password.html', {
+                'error': 'Passwords do not match.'
+            })
+
+        if len(password) < 8:
+            return render(request, 'driver/reset_password.html', {
+                'error': 'Password must contain at least 8 characters.'
+            })
+
+        driver = Driver.objects.filter(
+            email__iexact=request.session['driver_reset_email']
+        ).first()
+
+        if not driver:
+            return redirect('driver_forgot_password')
+
+        driver.password = password
+        driver.save()
+
+        for key in (
+            'driver_reset_otp',
+            'driver_reset_email',
+            'driver_otp_created_at',
+            'driver_otp_verified',
+        ):
+            request.session.pop(key, None)
+
+        return redirect('driver_login')
+
+    return render(request, 'driver/reset_password.html')
 
 def drivers(request):
 
