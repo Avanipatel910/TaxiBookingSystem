@@ -1439,10 +1439,11 @@ def driver_dashboard(request):
         request.session.pop('driver_email', None)
         return redirect('driver_login')
 
-    return render(request, 'driver/driver_dashboard.html', {
-        'driver': driver,
-    })
-
+    return render(
+        request,
+        'driver/driver_dashboard.html',
+        {'driver': driver}
+    )
 
 def driver_logout(request):
     request.session.pop('driver_id', None)
