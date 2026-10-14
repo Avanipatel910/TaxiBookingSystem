@@ -3,6 +3,7 @@ from django.contrib.auth.models import User as AdminUser
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.contrib.auth.hashers import check_password
+from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
@@ -11,7 +12,7 @@ from django.core.files import File
 from datetime import datetime, timedelta
 from .models import AdminProfile, User as CustomerUser, Driver
 
-import random
+import random 
 
 
 
@@ -1296,9 +1297,7 @@ def verify_registration_otp(request):
     )
 
 def driver_register(request):
-
     if request.method == 'POST':
-
         name = request.POST.get('name', '').strip()
         email = request.POST.get('email', '').strip().lower()
         license_number = request.POST.get('license_number', '').strip()
@@ -1306,53 +1305,77 @@ def driver_register(request):
         password = request.POST.get('password', '')
         confirm_password = request.POST.get('confirm_password', '')
 
-        # Required fields
-        if not name or not email or not license_number or not phone or not password or not confirm_password:
+        form_data = {
+            'name': name,
+            'email': email,
+            'license_number': license_number,
+            'phone': phone,
+        }
+
+        def show_error(message):
             return render(request, 'driver/driver_register.html', {
-                'error': 'All fields are required.',
-                'name': name,
-                'email': email,
-                'license_number': license_number,
-                'phone': phone,
+                'error': message,
+                **form_data,
             })
 
-        # Password confirmation
+        # 1. Required fields
+        if not all([
+            name, email, license_number, phone,
+            password, confirm_password
+        ]):
+            return show_error('All fields are required.')
+
+        # 2. Name validation
+        if len(name) > 100:
+            return show_error('Name must not exceed 100 characters.')
+
+        # 3. Email validation
+        try:
+            validate_email(email)
+        except ValidationError:
+            return show_error('Please enter a valid email address.')
+
+        # 4. Phone validation
+        if not phone.isdigit() or not 7 <= len(phone) <= 15:
+            return show_error(
+                'Enter a valid phone number using 7 to 15 digits.'
+            )
+
+        # 5. License number validation
+        if len(license_number) > 50:
+            return show_error('License number must not exceed 50 characters.')
+
+        # 6. Password confirmation
         if password != confirm_password:
-            return render(request, 'driver/driver_register.html', {
-                'error': 'Passwords do not match.',
-                'name': name,
-                'email': email,
-                'license_number': license_number,
-                'phone': phone,
-            })
+            return show_error('Passwords do not match.')
 
-        # Email already exists
+        # 7. Password strength
+        try:
+            validate_password(password)
+        except ValidationError as exc:
+            return show_error(' '.join(exc.messages))
+
+        # 8. Duplicate email check
         if Driver.objects.filter(email=email).exists():
-            return render(request, 'driver/driver_register.html', {
-                'error': 'An account with this email already exists.',
-                'name': name,
-                'email': email,
-                'license_number': license_number,
-                'phone': phone,
-            })
+            return show_error(
+                'An account with this email already exists.'
+            )
 
-        # License number already exists
-        if Driver.objects.filter(license_number=license_number).exists():
-            return render(request, 'driver/driver_register.html', {
-                'error': 'This license number is already registered.',
-                'name': name,
-                'email': email,
-                'license_number': license_number,
-                'phone': phone,
-            })
+        # 9. Duplicate license check
+        if Driver.objects.filter(
+            license_number=license_number
+        ).exists():
+            return show_error(
+                'This license number is already registered.'
+            )
 
-        # Create driver
+        # 10. Store the driver in the database
         Driver.objects.create(
             name=name,
             email=email,
             license_number=license_number,
             mobile=phone,
-            password=password
+            password=password,
         )
 
         return render(request, 'driver/driver_register.html', {

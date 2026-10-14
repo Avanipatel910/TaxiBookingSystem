@@ -67,42 +67,18 @@ class User(models.Model):
     def __str__(self):
         return self.name    
 
-
 class Driver(models.Model):
-
-    name = models.CharField(
-        max_length=100
-    )
-
-    email = models.EmailField(
-        unique=True
-    )
-
-    license_number = models.CharField(
-        max_length=50,
-        unique=True
-    )
-
-    mobile = models.CharField(
-        max_length=15
-    )
-
-    password = models.CharField(
-        max_length=128
-    )
-
-    created_at = models.DateTimeField(
-        auto_now_add=True
-    )
+    name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
+    license_number = models.CharField(max_length=50, unique=True)
+    mobile = models.CharField(max_length=15)
+    password = models.CharField(max_length=128)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-
         if not self.password.startswith('pbkdf2_'):
-            self.password = make_password(
-                self.password
-            )
-
+            self.password = make_password(self.password)
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.name    
+        return self.name
