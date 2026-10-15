@@ -1,4 +1,5 @@
 from django.urls import path
+from .views import admin_add_taxi
 from core.views import (
     admin_login,
     admin_logout,
@@ -188,4 +189,5 @@ path(
         bookings,
         name='bookings'
     ),
+    path('admin/taxis/add/', admin_add_taxi, name='admin_add_taxi'),
 ]

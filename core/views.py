@@ -3,7 +3,9 @@ from django.contrib.auth.models import User as AdminUser
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.contrib.auth.hashers import check_password
+from django.contrib import messages
 from django.utils import timezone
+from .forms import TaxiForm 
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
@@ -1543,10 +1545,32 @@ def driver_verify_otp(request):
 
 
 def driver_reset_password(request):
-    if (
-        not request.session.get('driver_reset_email')
-        or not request.session.get('driver_otp_verified')
-    ):
+    reset_email = request.session.get('driver_reset_email')
+    otp_verified = request.session.get('driver_otp_verified')
+    created_at = request.session.get('driver_otp_created_at')
+
+    # Ensure the OTP was verified
+    if not reset_email or not otp_verified or not created_at:
+        messages.error(
+            request,
+            'Please verify your OTP before resetting your password.'
+        )
+        return redirect('driver_forgot_password')
+
+    # Ensure the OTP has not expired
+    if timezone.now().timestamp() - float(created_at) > 300:
+        for key in (
+            'driver_reset_otp',
+            'driver_reset_email',
+            'driver_otp_created_at',
+            'driver_otp_verified',
+        ):
+            request.session.pop(key, None)
+
+        messages.error(
+            request,
+            'Your OTP has expired. Please request a new one.'
+        )
         return redirect('driver_forgot_password')
 
     if request.method == 'POST':
@@ -1568,16 +1592,29 @@ def driver_reset_password(request):
                 'error': 'Password must contain at least 8 characters.'
             })
 
-        driver = Driver.objects.filter(
-            email__iexact=request.session['driver_reset_email']
-        ).first()
+        try:
+            driver = Driver.objects.get(email__iexact=reset_email)
+        except Driver.DoesNotExist:
+            for key in (
+                'driver_reset_otp',
+                'driver_reset_email',
+                'driver_otp_created_at',
+                'driver_otp_verified',
+            ):
+                request.session.pop(key, None)
 
-        if not driver:
+            messages.error(
+                request,
+                'Driver account not found. Please try again.'
+            )
             return redirect('driver_forgot_password')
 
+        # Save the new password.
+        # The Driver model's save() method hashes plain-text passwords.
         driver.password = password
         driver.save()
 
+        # Clear password-reset session data
         for key in (
             'driver_reset_otp',
             'driver_reset_email',
@@ -1585,6 +1622,13 @@ def driver_reset_password(request):
             'driver_otp_verified',
         ):
             request.session.pop(key, None)
+
+        # Redirect to driver login with success message
+        messages.success(
+            request,
+            'Your password has been reset successfully. '
+            'Please log in with your new password.'
+        )
 
         return redirect('driver_login')
 
@@ -1874,4 +1918,28 @@ def bookings(request):
     return render(
         request,
         'admin/bookings/bookings.html'
+    )
+
+def admin_add_taxi(request):
+    # Use the same session-based check as your existing custom admin login.
+    if not request.session.get('admin_id'):
+        return redirect('admin_login')
+
+    if request.method == 'POST':
+        form = TaxiForm(request.POST)
+
+        if form.is_valid():
+            taxi = form.save()
+            messages.success(
+                request,
+                f'Taxi {taxi.number} added successfully.'
+            )
+            return redirect('admin_add_taxi')
+    else:
+        form = TaxiForm(initial={'availability': True})
+
+    return render(
+        request,
+        'admin/add_taxi.html',
+        {'form': form}
     )
