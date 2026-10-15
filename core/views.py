@@ -5,6 +5,8 @@ from django.db.models import Q
 from django.contrib.auth.hashers import check_password
 from django.contrib import messages
 from django.utils import timezone
+from .models import Taxi
+from .forms import TaxiForm
 from .forms import TaxiForm 
 from django.core.validators import validate_email
 from django.contrib.auth.password_validation import validate_password
@@ -1943,3 +1945,73 @@ def admin_add_taxi(request):
         'admin/add_taxi.html',
         {'form': form}
     )
+
+
+
+
+
+def admin_taxi_list(request):
+    if not request.session.get('admin_id'):
+        return redirect('admin_login')
+
+    taxis = Taxi.objects.select_related('driver').order_by('-id')
+
+    return render(request, 'admin/taxi_list.html', {
+        'taxis': taxis
+    })
+
+
+def admin_view_taxi(request, taxi_id):
+    if not request.session.get('admin_id'):
+        return redirect('admin_login')
+
+    taxi = get_object_or_404(
+        Taxi.objects.select_related('driver'),
+        id=taxi_id
+    )
+
+    return render(request, 'admin/view_taxi.html', {
+        'taxi': taxi
+    })
+
+
+def admin_edit_taxi(request, taxi_id):
+    if not request.session.get('admin_id'):
+        return redirect('admin_login')
+
+    taxi = get_object_or_404(Taxi, id=taxi_id)
+
+    if request.method == 'POST':
+        form = TaxiForm(request.POST, instance=taxi)
+
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request,
+                f'Taxi {taxi.number} updated successfully.'
+            )
+            return redirect('admin_taxi_list')
+    else:
+        form = TaxiForm(instance=taxi)
+
+    return render(request, 'admin/edit_taxi.html', {
+        'form': form,
+        'taxi': taxi
+    })
+
+
+
+def admin_delete_taxi(request, taxi_id):
+    if not request.session.get('admin_id'):
+        return redirect('admin_login')
+
+    taxi = get_object_or_404(Taxi, id=taxi_id)
+    taxi_number = taxi.number
+    taxi.delete()
+
+    messages.success(
+        request,
+        f'Taxi {taxi_number} deleted successfully.'
+    )
+
+    return redirect('admin_taxi_list')

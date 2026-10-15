@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Taxi Management | Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background:#f3f6fb; color:#172033; font-family:Arial,sans-serif; }
+        .page { max-width:1450px; margin:35px auto; padding:0 20px; }
+        .panel { background:#fff; border:1px solid #e5eaf2; border-radius:16px; overflow:hidden; box-shadow:0 8px 28px #1720330a; }
+        .panel-head { padding:22px 24px; border-bottom:1px solid #edf0f5; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; }
+        .panel-head h2 { font-size:24px; font-weight:750; margin:0; }
+        .subtext { color:#788499; font-size:14px; margin-top:6px; }
+        .table-responsive { padding:0 16px 12px; }
+        .table { vertical-align:middle; white-space:nowrap; }
+        .table th { background:#f7f9fc; color:#69768a; font-size:12px; text-transform:uppercase; letter-spacing:.4px; padding:16px 12px; }
+        .table td { padding:15px 12px; font-size:14px; }
+        .taxi-number { font-weight:700; }
+        .type-badge { background:#edf3ff; color:#245eb6; padding:6px 9px; border-radius:7px; }
+        .status { display:inline-block; padding:6px 10px; border-radius:20px; font-size:12px; font-weight:700; }
+        .available { background:#e6f7ee; color:#18784b; }
+        .unavailable { background:#fff0e8; color:#b64b1b; }
+        .action-links { display:flex; gap:7px; align-items:center; }
+        .action-links .btn { font-size:13px; }
+        .empty { padding:50px 15px; text-align:center; color:#788499; }
+        @media(max-width:600px) { .page { padding:0 10px; margin:20px auto; } .panel-head { padding:18px; } }
+    </style>
+</head>
+<body>
+
+{% include 'includes/navbar.html' %}
+
+<main class="page">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h1 class="h2 fw-bold mb-1">Taxi Management</h1>
+            <p class="text-secondary mb-0">View and manage taxis stored in your database.</p>
+        </div>
+        <a href="{% url 'admin_add_taxi' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> Add Taxi
+        </a>
+    </div>
+
+    {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+
+    <section class="panel">
+        <div class="panel-head">
+            <div>
+                <h2><i class="bi bi-car-front-fill me-2"></i>All Taxis</h2>
+                <div class="subtext">Total records: {{ taxis|length }}</div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Taxi Number</th>
+                        <th>Type</th>
+                        <th>Source</th>
+                        <th>Destination</th>
+                        <th>Price</th>
+                        <th>Driver</th>
+                        <th>Availability</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for taxi in taxis %}
+                    <tr>
+                        <td class="taxi-number">{{ taxi.number }}</td>
+                        <td><span class="type-badge">{{ taxi.type }}</span></td>
+                        <td>{{ taxi.source }}</td>
+                        <td>{{ taxi.destination }}</td>
+                        <td>₹{{ taxi.price|floatformat:2 }}</td>
+                        <td>{{ taxi.driver.name }}</td>
+                        <td>
+                            {% if taxi.availability %}
+                                <span class="status available">Available</span>
+                            {% else %}
+                                <span class="status unavailable">Unavailable</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="action-links">
+                                <a href="{% url 'admin_view_taxi' taxi.id %}"
+                                   class="btn btn-sm btn-outline-primary" title="View">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{% url 'admin_edit_taxi' taxi.id %}"
+                                   class="btn btn-sm btn-outline-secondary" title="Edit">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <form method="post"
+                                      action="{% url 'admin_delete_taxi' taxi.id %}"
+                                      onsubmit="return confirm('Are you sure you want to delete taxi {{ taxi.number|escapejs }}?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="8">
+                            <div class="empty">
+                                <i class="bi bi-car-front fs-1 d-block mb-3"></i>
+                                <h5>No taxis found</h5>
+                                <p>Add a taxi to see it listed here.</p>
+                                <a href="{% url 'admin_add_taxi' %}" class="btn btn-primary">
+                                    Add First Taxi
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

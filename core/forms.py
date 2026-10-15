@@ -54,3 +54,21 @@ class TaxiForm(forms.ModelForm):
                 'A taxi with this number already exists.'
             )
         return number
+
+
+
+
+def clean_number(self):
+    number = self.cleaned_data['number'].strip()
+
+    existing_taxis = Taxi.objects.filter(number__iexact=number)
+
+    if self.instance and self.instance.pk:
+        existing_taxis = existing_taxis.exclude(pk=self.instance.pk)
+
+    if existing_taxis.exists():
+        raise forms.ValidationError(
+            'A taxi with this number already exists.'
+        )
+
+    return number

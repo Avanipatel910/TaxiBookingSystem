@@ -11,6 +11,11 @@ from core.views import (
     verify_registration_otp,
     drivers,
     driver_detail,
+    admin_add_taxi,
+    admin_delete_taxi,
+    admin_edit_taxi,
+    admin_taxi_list,
+    admin_view_taxi,
     driver_login,
     driver_dashboard,
     driver_logout,
@@ -190,4 +195,8 @@ path(
         name='bookings'
     ),
     path('admin/taxis/add/', admin_add_taxi, name='admin_add_taxi'),
+    path('admin/taxis/', admin_taxi_list, name='admin_taxi_list'),
+    path('admin/taxis/<int:taxi_id>/', admin_view_taxi, name='admin_view_taxi'),
+    path('admin/taxis/<int:taxi_id>/edit/', admin_edit_taxi, name='admin_edit_taxi'),
+    path('admin/taxis/<int:taxi_id>/delete/', admin_delete_taxi, name='admin_delete_taxi'),
 ]

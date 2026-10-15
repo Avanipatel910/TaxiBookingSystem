@@ -1,0 +1,89 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Taxi Details | Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background:#f3f6fb; font-family:Arial,sans-serif; color:#172033; }
+        .page { max-width:850px; margin:40px auto; padding:0 18px; }
+        .card-box { background:white; border:1px solid #e5eaf2; border-radius:17px; overflow:hidden; box-shadow:0 8px 28px #1720330a; }
+        .card-head { padding:24px; background:#172b4d; color:white; }
+        .card-head h2 { font-weight:750; margin:0; }
+        .details { padding:25px; }
+        .detail { padding:16px 0; border-bottom:1px solid #edf0f5; }
+        .detail:last-child { border-bottom:0; }
+        .label { display:block; color:#788499; font-size:12px; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+        .value { font-weight:650; overflow-wrap:anywhere; }
+    </style>
+</head>
+<body>
+{% include 'includes/navbar.html' %}
+
+<main class="page">
+    <a href="{% url 'admin_taxi_list' %}" class="btn btn-outline-secondary mb-3">← Back to All Taxis</a>
+
+    <section class="card-box">
+        <div class="card-head">
+            <div class="small text-white-50 mb-2">TAXI DETAILS</div>
+            <h2>{{ taxi.number }}</h2>
+            <div class="mt-2">{{ taxi.type }}</div>
+        </div>
+
+        <div class="details">
+            <div class="row">
+                <div class="col-md-6 detail">
+                    <span class="label">Taxi Number</span>
+                    <div class="value">{{ taxi.number }}</div>
+                </div>
+                <div class="col-md-6 detail">
+                    <span class="label">Taxi Type</span>
+                    <div class="value">{{ taxi.type }}</div>
+                </div>
+                <div class="col-md-6 detail">
+                    <span class="label">Source</span>
+                    <div class="value">{{ taxi.source }}</div>
+                </div>
+                <div class="col-md-6 detail">
+                    <span class="label">Destination</span>
+                    <div class="value">{{ taxi.destination }}</div>
+                </div>
+                <div class="col-md-6 detail">
+                    <span class="label">Price</span>
+                    <div class="value">₹{{ taxi.price|floatformat:2 }}</div>
+                </div>
+                <div class="col-md-6 detail">
+                    <span class="label">Availability</span>
+                    <div class="value">
+                        {% if taxi.availability %}Available{% else %}Unavailable{% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6 detail">
+                    <span class="label">Assigned Driver</span>
+                    <div class="value">{{ taxi.driver.name }}</div>
+                </div>
+                <div class="col-md-6 detail">
+                    <span class="label">Driver Email</span>
+                    <div class="value">{{ taxi.driver.email }}</div>
+                </div>
+                <div class="col-md-6 detail">
+                    <span class="label">Driver Mobile</span>
+                    <div class="value">{{ taxi.driver.mobile }}</div>
+                </div>
+                <div class="col-md-6 detail">
+                    <span class="label">Driver Licence Number</span>
+                    <div class="value">{{ taxi.driver.license_number }}</div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap mt-4">
+                <a href="{% url 'admin_edit_taxi' taxi.id %}" class="btn btn-primary">Edit Taxi</a>
+                <a href="{% url 'admin_taxi_list' %}" class="btn btn-outline-secondary">Back to List</a>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>
