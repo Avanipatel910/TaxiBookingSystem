@@ -16,6 +16,7 @@ from core.views import (
     admin_edit_taxi,
     admin_taxi_list,
     admin_view_taxi,
+    taxi_search,
     driver_login,
     driver_dashboard,
     driver_logout,
@@ -86,6 +87,7 @@ path(
     user_login,
     name='user_login'
 ),
+path('taxi-search/', taxi_search, name='taxi_search'),
 path(
     'forgot-password/',
     user_forgot_password,

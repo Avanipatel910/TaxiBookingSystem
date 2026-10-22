@@ -2015,3 +2015,27 @@ def admin_delete_taxi(request, taxi_id):
     )
 
     return redirect('admin_taxi_list')
+
+
+def taxi_search(request):
+    source = request.GET.get('source', '').strip()
+    destination = request.GET.get('destination', '').strip()
+
+    taxis = Taxi.objects.none()
+    searched = False
+
+    if source and destination:
+        searched = True
+
+        taxis = Taxi.objects.filter(
+            availability=True,
+            source__iexact=source,
+            destination__iexact=destination
+        ).select_related('driver').order_by('price')
+
+    return render(request, 'user/taxi_search.html', {
+        'source': source,
+        'destination': destination,
+        'taxis': taxis,
+        'searched': searched,
+    })
