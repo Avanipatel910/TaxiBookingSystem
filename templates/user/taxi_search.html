@@ -1,381 +1,339 @@
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Find a Taxi | Taxi Booking</title>
+{% extends "base.html" %}
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
-          rel="stylesheet">
+{% block title %}Find a Taxi | Taxi Booking{% endblock %}
 
-    <style>
-        :root {
-            --primary: #f4b400;
-            --dark: #17202a;
-            --muted: #6b7280;
-            --surface: #ffffff;
-            --page: #f4f6f9;
+{% block content %}
+
+<style>
+    .search-page {
+        min-height: 80vh;
+        padding: 50px 0 70px;
+        background: linear-gradient(135deg, #f4f7fb, #e9eff8);
+    }
+
+    .search-hero {
+        background: linear-gradient(120deg, #101d36, #243f68);
+        color: white;
+        padding: 38px 32px;
+        border-radius: 20px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 28px;
+    }
+
+    .search-hero h1 {
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+    .search-hero p {
+        color: #d6e0f0;
+        margin-bottom: 0;
+    }
+
+    .hero-icon {
+        font-size: 70px;
+        opacity: 0.9;
+    }
+
+    .search-card {
+        border: none;
+        border-radius: 18px;
+        box-shadow: 0 12px 35px rgba(24, 42, 75, 0.09);
+        overflow: hidden;
+    }
+
+    .search-card .card-body {
+        padding: 30px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #25334b;
+    }
+
+    .form-control {
+        min-height: 48px;
+        border-radius: 10px;
+        border-color: #dce3ed;
+    }
+
+    .form-control:focus {
+        border-color: #355da8;
+        box-shadow: 0 0 0 0.2rem rgba(53, 93, 168, 0.12);
+    }
+
+    .btn-search {
+        min-height: 48px;
+        border-radius: 10px;
+        font-weight: 700;
+        background: #f5b82e;
+        color: #17233a;
+        border: none;
+        transition: 0.2s ease;
+    }
+
+    .btn-search:hover {
+        background: #e8a916;
+        color: #17233a;
+        transform: translateY(-1px);
+    }
+
+    .results-card {
+        border: none;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(24, 42, 75, 0.07);
+    }
+
+    .results-header {
+        background: #fff;
+        padding: 22px 26px;
+        border-bottom: 1px solid #edf0f5;
+    }
+
+    .results-header h4 {
+        font-weight: 750;
+        color: #17233a;
+    }
+
+    .route-label {
+        color: #66758c;
+        font-size: 14px;
+    }
+
+    .taxi-table th {
+        background: #f5f7fb;
+        color: #59677c;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        padding: 16px 20px;
+        white-space: nowrap;
+    }
+
+    .taxi-table td {
+        padding: 18px 20px;
+        color: #29374d;
+    }
+
+    .taxi-number {
+        font-weight: 750;
+        color: #17233a;
+    }
+
+    .price-tag {
+        display: inline-block;
+        background: #e7f7ee;
+        color: #16804a;
+        font-weight: 750;
+        padding: 7px 12px;
+        border-radius: 8px;
+        white-space: nowrap;
+    }
+
+    .empty-state {
+        padding: 45px 20px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        font-size: 44px;
+        margin-bottom: 12px;
+    }
+
+    @media (max-width: 767px) {
+        .search-page {
+            padding: 25px 0 40px;
         }
 
-        body {
-            margin: 0;
-            background: var(--page);
-            color: var(--dark);
-            font-family: "Segoe UI", Arial, sans-serif;
+        .search-hero {
+            padding: 28px 22px;
         }
 
-        .navbar {
-            background: var(--dark);
-            padding: 16px 0;
+        .search-hero h1 {
+            font-size: 26px;
         }
 
-        .brand {
-            color: white;
-            font-size: 1.3rem;
-            font-weight: 800;
-            text-decoration: none;
+        .hero-icon {
+            font-size: 45px;
         }
 
-        .brand i {
-            color: var(--primary);
+        .search-card .card-body {
+            padding: 22px;
         }
 
-        .hero {
-            background:
-                linear-gradient(115deg, rgba(16, 25, 36, .97),
-                rgba(27, 42, 57, .86)),
-                url("https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=1800&q=85")
-                center/cover;
-            color: white;
-            padding: 72px 20px 100px;
+        .results-header {
+            padding: 20px;
         }
+    }
+</style>
 
-        .hero h1 {
-            font-size: clamp(2rem, 5vw, 3.4rem);
-            font-weight: 800;
-            letter-spacing: -1px;
-        }
-
-        .hero p {
-            color: #d3d9df;
-            max-width: 620px;
-            margin: 15px auto 0;
-            line-height: 1.8;
-        }
-
-        .search-card {
-            position: relative;
-            margin: -48px auto 45px;
-            max-width: 1000px;
-            background: var(--surface);
-            padding: 30px;
-            border-radius: 18px;
-            box-shadow: 0 15px 45px rgba(23, 32, 42, .12);
-        }
-
-        .form-label {
-            font-weight: 700;
-            font-size: .92rem;
-        }
-
-        .form-control {
-            min-height: 52px;
-            border-radius: 10px;
-            border: 1px solid #dfe4ea;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 .2rem rgba(244, 180, 0, .15);
-        }
-
-        .btn-search {
-            min-height: 52px;
-            border: 0;
-            border-radius: 10px;
-            background: var(--primary);
-            color: #17202a;
-            font-weight: 800;
-            width: 100%;
-            transition: .2s ease;
-        }
-
-        .btn-search:hover {
-            background: #e0a400;
-            transform: translateY(-1px);
-        }
-
-        .section-heading {
-            font-weight: 800;
-            letter-spacing: -.4px;
-        }
-
-        .taxi-card {
-            height: 100%;
-            border: 1px solid #e9edf2;
-            border-radius: 16px;
-            background: white;
-            padding: 24px;
-            box-shadow: 0 5px 20px rgba(23, 32, 42, .045);
-            transition: .2s ease;
-        }
-
-        .taxi-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 28px rgba(23, 32, 42, .09);
-        }
-
-        .taxi-icon {
-            width: 54px;
-            height: 54px;
-            display: grid;
-            place-items: center;
-            background: #fff5d7;
-            color: #9b7100;
-            border-radius: 14px;
-            font-size: 1.6rem;
-        }
-
-        .taxi-number {
-            font-weight: 800;
-            font-size: 1.1rem;
-        }
-
-        .route {
-            background: #f7f8fa;
-            border-radius: 10px;
-            padding: 14px;
-            margin: 20px 0;
-        }
-
-        .route-point {
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-            font-size: .93rem;
-            overflow-wrap: anywhere;
-        }
-
-        .route-point + .route-point {
-            margin-top: 12px;
-        }
-
-        .price {
-            color: #176b45;
-            font-size: 1.6rem;
-            font-weight: 800;
-        }
-
-        .muted {
-            color: var(--muted);
-        }
-
-        .empty-state {
-            text-align: center;
-            background: white;
-            border-radius: 16px;
-            padding: 48px 20px;
-            border: 1px dashed #d4dbe4;
-        }
-
-        footer {
-            background: var(--dark);
-            color: #c5ccd4;
-            padding: 24px 0;
-            margin-top: 60px;
-            font-size: .9rem;
-        }
-
-        @media (max-width: 767px) {
-            .hero {
-                padding: 55px 18px 80px;
-            }
-
-            .search-card {
-                padding: 22px 18px;
-                margin-top: -38px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-<nav class="navbar">
+<div class="search-page">
     <div class="container">
-        <a class="brand" href="/">
-            <i class="bi bi-taxi-front-fill"></i>
-            TaxiBooking
-        </a>
-        <a href="/user-login/" class="btn btn-outline-light btn-sm">
-            <i class="bi bi-person-circle me-1"></i> User Login
-        </a>
-    </div>
-</nav>
 
-<section class="hero text-center">
-    <div class="container">
-        <span class="badge rounded-pill text-bg-warning mb-3 px-3 py-2">
-            YOUR JOURNEY STARTS HERE
-        </span>
-        <h1>Find the right taxi for your journey.</h1>
-        <p>
-            Enter your pickup and destination locations to discover
-            available taxis for your route.
-        </p>
-    </div>
-</section>
+        <!-- Page Heading -->
+        <div class="search-hero">
+            <div class="row align-items-center">
+                <div class="col-md-9">
+                    <span class="badge text-bg-warning mb-3 px-3 py-2">
+                        YOUR JOURNEY STARTS HERE
+                    </span>
 
-<main class="container">
-    <section class="search-card">
-        <div class="mb-4">
-            <h2 class="h4 fw-bold mb-1">Where would you like to go?</h2>
-            <p class="muted mb-0">Search available taxis by route.</p>
+                    <h1>Find Your Perfect Ride</h1>
+
+                    <p class="mt-2">
+                        Enter your pickup and destination to discover
+                        available taxis and compare prices.
+                    </p>
+                </div>
+
+                <div class="col-md-3 text-md-end mt-3 mt-md-0">
+                    <span class="hero-icon" aria-hidden="true">🚕</span>
+                </div>
+            </div>
         </div>
 
-        <form method="get" action="{% url 'taxi_search' %}">
-            <div class="row g-3 align-items-end">
-                <div class="col-md-5">
-                    <label for="source" class="form-label">
-                        <i class="bi bi-geo-alt text-success me-1"></i>
-                        Pickup location
-                    </label>
-                    <input
-                        type="text"
-                        id="source"
-                        name="source"
-                        class="form-control"
-                        placeholder="Enter source location"
-                        value="{{ source }}"
-                        maxlength="100"
-                        required
-                    >
-                </div>
+        <!-- Search Form -->
+        <div class="card search-card mb-4">
+            <div class="card-body">
+                <h4 class="fw-bold mb-1">Search Available Taxis</h4>
 
-                <div class="col-md-5">
-                    <label for="destination" class="form-label">
-                        <i class="bi bi-geo-alt-fill text-danger me-1"></i>
-                        Destination
-                    </label>
-                    <input
-                        type="text"
-                        id="destination"
-                        name="destination"
-                        class="form-control"
-                        placeholder="Enter destination"
-                        value="{{ destination }}"
-                        maxlength="100"
-                        required
-                    >
-                </div>
-
-                <div class="col-md-2">
-                    <button type="submit" class="btn-search">
-                        <i class="bi bi-search me-1"></i> Search
-                    </button>
-                </div>
-            </div>
-        </form>
-    </section>
-
-    <section class="mb-5">
-        {% if searched %}
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-                <div>
-                    <h2 class="section-heading h3 mb-1">Available taxis</h2>
-                    <p class="muted mb-0">
-                        {{ source }} <i class="bi bi-arrow-right mx-1"></i>
-                        {{ destination }}
-                    </p>
-                </div>
-                <span class="badge rounded-pill text-bg-light border px-3 py-2">
-                    {{ taxis|length }} result{{ taxis|length|pluralize }}
-                </span>
-            </div>
-
-            {% if taxis %}
-                <div class="row g-4">
-                    {% for taxi in taxis %}
-                        <div class="col-md-6 col-xl-4">
-                            <article class="taxi-card">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="taxi-icon">
-                                        <i class="bi bi-taxi-front"></i>
-                                    </div>
-                                    <div>
-                                        <div class="taxi-number">
-                                            {{ taxi.number }}
-                                        </div>
-                                        <div class="muted small">
-                                            {{ taxi.type }}
-                                        </div>
-                                    </div>
-                                    <span class="badge rounded-pill text-bg-success ms-auto">
-                                        Available
-                                    </span>
-                                </div>
-
-                                <div class="route">
-                                    <div class="route-point">
-                                        <i class="bi bi-circle-fill text-success mt-1"></i>
-                                        <div>
-                                            <div class="small muted">Pickup</div>
-                                            <strong>{{ taxi.source }}</strong>
-                                        </div>
-                                    </div>
-                                    <div class="route-point">
-                                        <i class="bi bi-geo-alt-fill text-danger mt-1"></i>
-                                        <div>
-                                            <div class="small muted">Destination</div>
-                                            <strong>{{ taxi.destination }}</strong>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="d-flex justify-content-between align-items-end gap-3">
-                                    <div>
-                                        <div class="small muted">Listed fare</div>
-                                        <div class="price">
-                                            ₹{{ taxi.price|floatformat:2 }}
-                                        </div>
-                                    </div>
-                                    <div class="text-end">
-                                        <div class="small muted">Driver</div>
-                                        <strong>{{ taxi.driver.name }}</strong>
-                                    </div>
-                                </div>
-                            </article>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="empty-state">
-                    <i class="bi bi-search display-4 text-secondary"></i>
-                    <h3 class="h5 fw-bold mt-3">No matching taxis found</h3>
-                    <p class="muted mb-0">
-                        No available taxi matches both locations.
-                        Check the spelling or try another route.
-                    </p>
-                </div>
-            {% endif %}
-        {% else %}
-            <div class="text-center py-4">
-                <i class="bi bi-signpost-split display-5 text-secondary"></i>
-                <h2 class="h5 fw-bold mt-3">Your next ride is a search away</h2>
-                <p class="muted mb-0">
-                    Enter both locations above to see matching available taxis.
+                <p class="text-muted mb-4">
+                    Choose your route to see available rides.
                 </p>
+
+                <form method="get" action="{% url 'taxi_search' %}">
+                    <div class="row g-3 align-items-end">
+
+                        <div class="col-md-5">
+                            <label for="source" class="form-label">
+                                <span class="me-1">📍</span> Pickup Location
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="source"
+                                name="source"
+                                placeholder="Enter pickup location"
+                                value="{{ source }}"
+                                required
+                            >
+                        </div>
+
+                        <div class="col-md-5">
+                            <label for="destination" class="form-label">
+                                <span class="me-1">🏁</span> Destination
+                            </label>
+
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="destination"
+                                name="destination"
+                                placeholder="Enter destination"
+                                value="{{ destination }}"
+                                required
+                            >
+                        </div>
+
+                        <div class="col-md-2">
+                            <button
+                                type="submit"
+                                class="btn btn-search w-100"
+                            >
+                                Search Taxis
+                            </button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Search Results -->
+        {% if searched %}
+            <div class="card results-card">
+
+                <div class="results-header">
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <div>
+                            <h4 class="mb-1">Available Taxis</h4>
+
+                            <div class="route-label">
+                                {{ source }} <span class="mx-2">→</span> {{ destination }}
+                            </div>
+                        </div>
+
+                        {% if taxis %}
+                            <span class="badge rounded-pill text-bg-success px-3 py-2">
+                                {{ taxis|length }} taxi{{ taxis|length|pluralize }} found
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if taxis %}
+                    <div class="table-responsive">
+                        <table class="table taxi-table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Taxi Number</th>
+                                    <th>Driver Email</th>
+                                    <th class="text-end">Price</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for taxi in taxis %}
+                                    <tr>
+                                        <td>
+                                            <span class="taxi-number">
+                                                🚕 {{ taxi.number }}
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            {{ taxi.driver.email|default:"Not available" }}
+                                        </td>
+
+                                        <td class="text-end">
+                                            <span class="price-tag">
+                                                ₹{{ taxi.price }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">🚖</div>
+
+                        <h5 class="fw-bold">No matching taxis found</h5>
+
+                        <p class="text-muted mb-3">
+                            We couldn't find an available taxi for this route.
+                            Check your locations or try another route.
+                        </p>
+
+                        <a
+                            href="{% url 'taxi_search' %}"
+                            class="btn btn-outline-primary rounded-pill px-4"
+                        >
+                            Search Again
+                        </a>
+                    </div>
+                {% endif %}
+
             </div>
         {% endif %}
-    </section>
-</main>
 
-<footer>
-    <div class="container text-center">
-        &copy; 2026 TaxiBooking. All rights reserved.
     </div>
-</footer>
-</body>
-</html>
+</div>
+
+{% endblock %}
