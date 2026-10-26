@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Admin
-from .models import Taxi,TaxiDetails
+from .models import Taxi,TaxiDetails,Booking
 
 admin.site.register(Taxi)
 
@@ -21,3 +21,14 @@ class TaxiDetailsAdmin(admin.ModelAdmin):
     )
     list_filter = ('source', 'destination')
 
+from .models import Booking
+
+@admin.register(Booking)
+class BookingAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'taxi', 'date', 'status')
+    list_filter = ('status', 'date')
+    search_fields = (
+        'user__name',
+        'user__email',
+        'taxi__number',
+    )
