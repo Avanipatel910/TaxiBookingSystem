@@ -17,6 +17,8 @@ from core.views import (
     admin_taxi_list,
     admin_view_taxi,
     taxi_search,
+    taxi_detail,
+    book_taxi,
     driver_login,
     driver_dashboard,
     driver_logout,
@@ -88,6 +90,12 @@ path(
     name='user_login'
 ),
 path('taxi-search/', taxi_search, name='taxi_search'),
+path(
+    'taxi/<int:taxi_id>/',
+    taxi_detail,
+    name='taxi_detail'
+),
+path('book-taxi/<int:taxi_id>/', book_taxi, name='book_taxi'),
 path(
     'forgot-password/',
     user_forgot_password,
@@ -201,4 +209,5 @@ path(
     path('admin/taxis/<int:taxi_id>/', admin_view_taxi, name='admin_view_taxi'),
     path('admin/taxis/<int:taxi_id>/edit/', admin_edit_taxi, name='admin_edit_taxi'),
     path('admin/taxis/<int:taxi_id>/delete/', admin_delete_taxi, name='admin_delete_taxi'),
+    
 ]

@@ -1,0 +1,203 @@
+
+{% extends "base.html" %}
+
+{% block title %}Taxi Details | Taxi Booking{% endblock %}
+
+{% block content %}
+
+<style>
+    .detail-page {
+        min-height: 80vh;
+        padding: 45px 0 65px;
+        background: #f3f6fb;
+    }
+
+    .detail-card {
+        max-width: 850px;
+        margin: auto;
+        overflow: hidden;
+        border: 0;
+        border-radius: 20px;
+        box-shadow: 0 12px 35px rgba(24, 42, 75, 0.09);
+    }
+
+    .detail-header {
+        padding: 32px;
+        color: white;
+        background: linear-gradient(120deg, #101d36, #294b7b);
+    }
+
+    .taxi-icon {
+        font-size: 55px;
+    }
+
+    .detail-header h1 {
+        font-weight: 800;
+    }
+
+    .detail-body {
+        padding: 32px;
+    }
+
+    .detail-item {
+        height: 100%;
+        padding: 20px;
+        border: 1px solid #e8edf4;
+        border-radius: 12px;
+        background: #fff;
+    }
+
+    .detail-label {
+        margin-bottom: 8px;
+        color: #718096;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.7px;
+        text-transform: uppercase;
+    }
+
+    .detail-value {
+        margin-bottom: 0;
+        color: #1b2a41;
+        font-size: 17px;
+        font-weight: 650;
+        overflow-wrap: anywhere;
+    }
+
+    .price-value {
+        color: #16804a;
+        font-size: 25px;
+    }
+
+    .detail-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+    }
+
+    @media (max-width: 576px) {
+        .detail-header,
+        .detail-body {
+            padding: 24px 20px;
+        }
+    }
+</style>
+
+<div class="detail-page">
+    <div class="container">
+
+        <div class="mb-4">
+            <a href="{% url 'taxi_search' %}"
+               class="text-decoration-none text-secondary">
+                ← Back to Taxi Search
+            </a>
+        </div>
+
+        <div class="card detail-card">
+
+            <div class="detail-header">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="taxi-icon">🚕</div>
+
+                    <div>
+                        <span class="badge text-bg-warning mb-2">
+                            TAXI INFORMATION
+                        </span>
+
+                        <h1 class="h2 mb-1">
+                            {{ taxi.number }}
+                        </h1>
+
+                        <p class="mb-0 text-white-50">
+                            Review the details of this taxi.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-body">
+
+                <h4 class="fw-bold mb-4">Taxi Details</h4>
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <div class="detail-label">Taxi Number</div>
+                            <p class="detail-value">{{ taxi.number }}</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <div class="detail-label">Taxi Type</div>
+                            <p class="detail-value">
+                                {{ taxi.type|default:"Not specified" }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <div class="detail-label">Pickup Location</div>
+                            <p class="detail-value">{{ taxi.source }}</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <div class="detail-label">Destination</div>
+                            <p class="detail-value">{{ taxi.destination }}</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <div class="detail-label">Price</div>
+                            <p class="detail-value price-value">
+                                ₹{{ taxi.price }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="detail-item">
+                            <div class="detail-label">Availability</div>
+
+                            {% if taxi.availability %}
+                                <span class="badge text-bg-success fs-6">
+                                    Available
+                                </span>
+                            {% else %}
+                                <span class="badge text-bg-secondary fs-6">
+                                    Currently Unavailable
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="detail-item">
+                            <div class="detail-label">Driver Email</div>
+                            <p class="detail-value">
+                                {{ taxi.driver.email|default:"Not available" }}
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="detail-actions">
+                    <a href="{% url 'taxi_search' %}"
+                       class="btn btn-outline-secondary rounded-pill px-4">
+                        Back to Search
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -283,6 +283,7 @@
                                     <th>Taxi Number</th>
                                     <th>Driver Email</th>
                                     <th class="text-end">Price</th>
+                                    <th class="text-center">Action</th>
                                 </tr>
                             </thead>
 
@@ -304,6 +305,21 @@
                                                 ₹{{ taxi.price }}
                                             </span>
                                         </td>
+                                        <td class="text-center">
+    <a
+        href="{% url 'taxi_detail' taxi.id %}"
+        class="btn btn-outline-primary btn-sm rounded-pill px-3"
+    >
+        View Details
+    </a>
+
+     <a
+            href="{% url 'book_taxi' taxi.id %}"
+            class="btn btn-warning btn-sm rounded-pill px-3 fw-bold"
+        >
+            Book Now
+        </a>
+</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>

@@ -1879,9 +1879,6 @@ def edit_user(request, user_id):
     )
 
 
-# =========================================================
-# DELETE CUSTOMER
-# =========================================================
 
 def delete_user(request, user_id):
 
@@ -1904,10 +1901,6 @@ def delete_user(request, user_id):
         'users'
     )
 
-
-# =========================================================
-# BOOKINGS
-# =========================================================
 
 def bookings(request):
 
@@ -1945,9 +1938,6 @@ def admin_add_taxi(request):
         'admin/add_taxi.html',
         {'form': form}
     )
-
-
-
 
 
 def admin_taxi_list(request):
@@ -2038,4 +2028,26 @@ def taxi_search(request):
         'destination': destination,
         'taxis': taxis,
         'searched': searched,
+    })
+
+
+def taxi_detail(request, taxi_id):
+    taxi = get_object_or_404(
+        Taxi.objects.select_related('driver'),
+        id=taxi_id
+    )
+
+    return render(request, 'user/taxi_detail.html', {
+        'taxi': taxi,
+    })
+
+def book_taxi(request, taxi_id):
+    taxi = get_object_or_404(
+        Taxi.objects.select_related('driver'),
+        id=taxi_id,
+        availability=True
+    )
+
+    return render(request, 'user/book_taxi.html', {
+        'taxi': taxi,
     })
