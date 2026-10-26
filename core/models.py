@@ -100,3 +100,18 @@ class Taxi(models.Model):
 
     def __str__(self):
         return f"{self.number} - {self.type}"    
+
+
+
+class TaxiDetails(models.Model):
+    source = models.CharField(max_length=100)
+    destination = models.CharField(max_length=100)
+
+    driver = models.ForeignKey(
+        Driver,
+        on_delete=models.CASCADE,
+        related_name='taxi_details'
+    )
+
+    def __str__(self):
+        return f"{self.source} to {self.destination} - {self.driver.name}"    
