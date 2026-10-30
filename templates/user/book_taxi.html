@@ -7,109 +7,288 @@
 
 <style>
     .booking-page {
-        min-height: 75vh;
-        padding: 50px 0;
-        background: #f3f6fb;
+        min-height: 85vh;
+        padding: 50px 0 65px;
+        background: linear-gradient(135deg, #f3f6fb, #e8eef7);
     }
 
     .booking-card {
-        max-width: 700px;
+        max-width: 750px;
         margin: auto;
-        border: 0;
-        border-radius: 20px;
+        border: none;
+        border-radius: 22px;
         overflow: hidden;
-        box-shadow: 0 12px 35px rgba(24, 42, 75, 0.09);
+        background: #fff;
+        box-shadow: 0 15px 45px rgba(24, 42, 75, 0.10);
     }
 
     .booking-header {
-        padding: 30px;
+        padding: 35px;
         color: white;
         background: linear-gradient(120deg, #101d36, #294b7b);
     }
 
+    .booking-header h1 {
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+    .taxi-icon {
+        font-size: 55px;
+    }
+
     .booking-body {
-        padding: 30px;
+        padding: 32px;
     }
 
     .booking-info {
-        padding: 18px;
-        margin-bottom: 12px;
-        border: 1px solid #e7edf5;
-        border-radius: 12px;
+        padding: 19px 20px;
+        margin-bottom: 13px;
+        border: 1px solid #e2eaf5;
+        border-radius: 13px;
         background: #fff;
+        transition: 0.2s ease;
+    }
+
+    .booking-info:hover {
+        border-color: #a9bfdf;
+        transform: translateY(-2px);
     }
 
     .booking-label {
         color: #718096;
         font-size: 12px;
-        font-weight: 700;
+        font-weight: 750;
         text-transform: uppercase;
-        letter-spacing: .5px;
+        letter-spacing: .7px;
+        margin-bottom: 7px;
     }
 
     .booking-value {
-        margin-top: 5px;
-        margin-bottom: 0;
-        color: #1b2a41;
-        font-weight: 650;
+        margin: 0;
+        color: #17233a;
+        font-size: 16px;
+        font-weight: 700;
         overflow-wrap: anywhere;
+    }
+
+    .price-value {
+        color: #15945a;
+        font-size: 25px;
+    }
+
+    .booking-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 25px;
+    }
+
+    .btn-confirm {
+        background: #f5b82e;
+        border: none;
+        color: #17233a;
+        font-weight: 750;
+        transition: .2s ease;
+    }
+
+    .btn-confirm:hover {
+        background: #e8a916;
+        color: #17233a;
+        transform: translateY(-2px);
+    }
+
+    .booking-note {
+        border-radius: 12px;
+        font-size: 14px;
+    }
+
+    @media (max-width: 576px) {
+        .booking-page {
+            padding: 25px 0 40px;
+        }
+
+        .booking-header,
+        .booking-body {
+            padding: 24px 20px;
+        }
+
+        .booking-header h1 {
+            font-size: 25px;
+        }
+
+        .booking-actions > * {
+            width: 100%;
+        }
+
+        .booking-actions form button,
+        .booking-actions a {
+            width: 100%;
+        }
     }
 </style>
 
 <div class="booking-page">
     <div class="container">
 
+        <!-- Booking Card -->
         <div class="card booking-card">
+
+            <!-- Header -->
             <div class="booking-header">
-                <div class="fs-1 mb-2">🚕</div>
-                <h1 class="h3 fw-bold">Your Selected Taxi</h1>
-                <p class="mb-0 text-white-50">
-                    Review your taxi details before proceeding.
-                </p>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="taxi-icon">🚕</div>
+
+                    <div>
+                        <span class="badge text-bg-warning mb-2">
+                            BOOK YOUR RIDE
+                        </span>
+
+                        <h1 class="h2 mb-1">
+                            Selected Taxi
+                        </h1>
+
+                        <p class="mb-0 text-white-50">
+                            Review your taxi information before confirming.
+                        </p>
+                    </div>
+                </div>
             </div>
 
+            <!-- Body -->
             <div class="booking-body">
-                <div class="booking-info">
-                    <div class="booking-label">Taxi Number</div>
-                    <p class="booking-value">{{ taxi.number }}</p>
+
+                <h4 class="fw-bold mb-4">
+                    Taxi Information
+                </h4>
+
+                <div class="row">
+
+                    <!-- Taxi Number -->
+                    <div class="col-12">
+                        <div class="booking-info">
+                            <div class="booking-label">
+                                Taxi Number
+                            </div>
+
+                            <p class="booking-value">
+                                {{ taxi.number }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Taxi Type -->
+                    <div class="col-12">
+                        <div class="booking-info">
+                            <div class="booking-label">
+                                Taxi Type
+                            </div>
+
+                            <p class="booking-value">
+                                {{ taxi.type|default:"Not specified" }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Route -->
+                    <div class="col-12">
+                        <div class="booking-info">
+                            <div class="booking-label">
+                                Route
+                            </div>
+
+                            <p class="booking-value">
+                                {{ taxi.source }} → {{ taxi.destination }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="col-12">
+                        <div class="booking-info">
+                            <div class="booking-label">
+                                Total Price
+                            </div>
+
+                            <p class="booking-value price-value">
+                                ₹{{ taxi.price }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Driver Email -->
+                    <div class="col-12">
+                        <div class="booking-info">
+                            <div class="booking-label">
+                                Driver Email
+                            </div>
+
+                            <p class="booking-value">
+                                {{ taxi.driver.email|default:"Not available" }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Availability -->
+                    <div class="col-12">
+                        <div class="booking-info">
+                            <div class="booking-label">
+                                Availability
+                            </div>
+
+                            {% if taxi.availability %}
+                                <span class="badge text-bg-success">
+                                    Available
+                                </span>
+                            {% else %}
+                                <span class="badge text-bg-danger">
+                                    Unavailable
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
                 </div>
 
-                <div class="booking-info">
-                    <div class="booking-label">Taxi Type</div>
-                    <p class="booking-value">
-                        {{ taxi.type|default:"Not specified" }}
-                    </p>
+                <!-- Booking Notice -->
+                <div class="alert alert-info booking-note mt-3">
+                    <strong>Before you confirm:</strong>
+                    Please check your route, taxi number and price.
+                    Your booking will be created with Pending status.
                 </div>
 
-                <div class="booking-info">
-                    <div class="booking-label">Route</div>
-                    <p class="booking-value">
-                        {{ taxi.source }} → {{ taxi.destination }}
-                    </p>
+                <!-- Action Buttons -->
+                <div class="booking-actions">
+
+                    <a href="{% url 'taxi_search' %}"
+                       class="btn btn-outline-secondary rounded-pill px-4 py-2">
+                        ← Back to Search
+                    </a>
+
+                    {% if taxi.availability %}
+
+                        <form method="post"
+                              action="{% url 'confirm_taxi_booking' taxi.id %}">
+                            {% csrf_token %}
+
+                            <button type="submit"
+                                    class="btn btn-confirm rounded-pill px-4 py-2">
+                                ✓ Confirm Booking
+                            </button>
+                        </form>
+
+                    {% else %}
+
+                        <button type="button"
+                                class="btn btn-secondary rounded-pill px-4 py-2"
+                                disabled>
+                            Taxi Unavailable
+                        </button>
+
+                    {% endif %}
+
                 </div>
 
-                <div class="booking-info">
-                    <div class="booking-label">Price</div>
-                    <p class="booking-value text-success fs-4">
-                        ₹{{ taxi.price }}
-                    </p>
-                </div>
-
-                <div class="booking-info">
-                    <div class="booking-label">Driver Email</div>
-                    <p class="booking-value">
-                        {{ taxi.driver.email|default:"Not available" }}
-                    </p>
-                </div>
-
-                <div class="alert alert-info mt-4">
-                    This is a booking preview. Your ride has not been booked yet.
-                </div>
-
-                <a href="{% url 'taxi_search' %}"
-                   class="btn btn-outline-secondary rounded-pill px-4">
-                    Back to Search
-                </a>
             </div>
         </div>
 

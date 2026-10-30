@@ -577,10 +577,10 @@ body {
                 <span>Dashboard</span>
             </a>
 
-            <a href="#">
-                <i class="bi bi-car-front-fill"></i>
-                <span>Book Taxi</span>
-            </a>
+            <a href="{% url 'taxi_search' %}">
+    <i class="bi bi-car-front-fill"></i>
+    <span>Book Taxi</span>
+</a>
 
             <a href="#">
                 <i class="bi bi-receipt"></i>
@@ -700,13 +700,10 @@ body {
                     Book your next ride quickly and conveniently.
                 </p>
 
-                <a href="#" class="booking-btn">
-
-                    <i class="bi bi-car-front-fill"></i>
-
-                    Book a Taxi
-
-                </a>
+              <a href="{% url 'taxi_search' %}" class="booking-btn">
+    <i class="bi bi-car-front-fill"></i>
+    Book a Taxi
+</a>
 
             </div>
 
@@ -829,10 +826,10 @@ body {
                             to request a taxi.
                         </p>
 
-                        <a href="#" class="service-link">
-                            Start booking
-                            <i class="bi bi-arrow-right"></i>
-                        </a>
+                        <a href="{% url 'taxi_search' %}" class="service-link">
+    Start booking
+    <i class="bi bi-arrow-right"></i>
+</a>
 
                     </div>
 

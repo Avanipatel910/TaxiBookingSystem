@@ -15,7 +15,7 @@ from django.core.mail import send_mail
 from django.core.files.storage import default_storage
 from django.core.files import File
 from datetime import datetime, timedelta
-from .models import AdminProfile, User as CustomerUser, Driver
+from .models import AdminProfile, User as CustomerUser, Driver,Booking, Taxi, User
 
 import random 
 
@@ -1782,9 +1782,6 @@ def user_detail(request, user_id):
     )
 
 
-# =========================================================
-# EDIT CUSTOMER
-# =========================================================
 
 def edit_user(request, user_id):
 
@@ -2042,6 +2039,7 @@ def taxi_detail(request, taxi_id):
     })
 
 def book_taxi(request, taxi_id):
+
     taxi = get_object_or_404(
         Taxi.objects.select_related('driver'),
         id=taxi_id,
@@ -2051,3 +2049,37 @@ def book_taxi(request, taxi_id):
     return render(request, 'user/book_taxi.html', {
         'taxi': taxi,
     })
+
+
+
+def confirm_taxi_booking(request, taxi_id):
+    if request.method != 'POST':
+        return redirect('taxi_detail', taxi_id=taxi_id)
+
+    # Get the logged-in custom user from the session.
+    user_id = request.session.get('user_id')
+
+    if not user_id:
+        messages.error(request, 'Please log in before booking a taxi.')
+        return redirect('user_login')
+
+    user = get_object_or_404(User, id=user_id)
+
+    taxi = get_object_or_404(
+        Taxi,
+        id=taxi_id,
+        availability=True
+    )
+
+    Booking.objects.create(
+        user=user,
+        taxi=taxi,
+        status='Pending'
+    )
+
+    messages.success(
+        request,
+        f'Booking confirmed successfully! Your booking is pending approval.'
+    )
+
+    return redirect('user_dashboard')
