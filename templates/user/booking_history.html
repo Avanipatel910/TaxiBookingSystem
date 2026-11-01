@@ -134,6 +134,9 @@
                     <tr>
                         <th>Booking ID</th>
                         <th>Taxi</th>
+                        <th>Driver Name</th>
+                        <th>Driver Mobile</th>
+                        <th>License Number</th>
                         <th>Route</th>
                         <th>Price</th>
                         <th>Booking Date</th>
@@ -154,7 +157,29 @@
                                 {{ booking.taxi.type }}
                             </small>
                         </td>
+                        <td>
+    {% if booking.taxi.driver %}
+        <strong>{{ booking.taxi.driver.name }}</strong>
+    {% else %}
+        Not Assigned
+    {% endif %}
+</td>
 
+<td>
+    {% if booking.taxi.driver %}
+        {{ booking.taxi.driver.mobile }}
+    {% else %}
+        Not Available
+    {% endif %}
+</td>
+
+<td>
+    {% if booking.taxi.driver %}
+        {{ booking.taxi.driver.license_number }}
+    {% else %}
+        Not Available
+    {% endif %}
+</td>
                         <td>
                             <div>{{ booking.taxi.source }}</div>
                             <small class="text-muted">
@@ -175,20 +200,23 @@
                         </td>
 
                         <td>
-                            {% if booking.status == 'Confirmed' %}
-                                <span class="status confirmed">
-                                    {{ booking.status }}
-                                </span>
-                            {% elif booking.status == 'Cancelled' %}
-                                <span class="status cancelled">
-                                    {{ booking.status }}
-                                </span>
-                            {% else %}
-                                <span class="status">
-                                    {{ booking.status }}
-                                </span>
-                            {% endif %}
-                        </td>
+    {% if booking.status == 'Pending' %}
+        <span class="badge bg-warning text-dark">
+            Pending
+        </span>
+
+    {% elif booking.status == 'Approved' %}
+        <span class="badge bg-success">
+            Approved
+        </span>
+
+    {% elif booking.status == 'Cancelled' %}
+        <span class="badge bg-danger">
+            Cancelled
+        </span>
+
+    {% endif %}
+</td>
                     </tr>
                     {% endfor %}
                 </tbody>

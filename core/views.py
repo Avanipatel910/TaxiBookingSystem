@@ -2115,6 +2115,23 @@ def booking_history(request):
 
     customer = get_object_or_404(User, id=customer_id)
 
+    bookings = customer.bookings.select_related(
+        'taxi',
+        'taxi__driver'
+    ).order_by('-date')
+
+    return render(request, 'user/booking_history.html', {
+        'bookings': bookings,
+        'customer': customer,
+    })
+    customer_id = request.session.get('customer_id')
+
+    if not customer_id:
+        messages.error(request, 'Please log in to view your bookings.')
+        return redirect('user_login')
+
+    customer = get_object_or_404(User, id=customer_id)
+
     # Fetch only bookings related to the logged-in customer
     bookings = customer.bookings.select_related(
         'taxi',
