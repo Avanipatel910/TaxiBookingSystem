@@ -1,6 +1,8 @@
+
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User as DjangoUser
 from django.contrib.auth.hashers import make_password
+
 
 class Admin(models.Model):
     username = models.CharField(max_length=100, unique=True)
@@ -13,9 +15,8 @@ class Admin(models.Model):
 
 
 class AdminProfile(models.Model):
-
     user = models.OneToOneField(
-        User,
+        DjangoUser,
         on_delete=models.CASCADE,
         related_name='admin_profile'
     )
@@ -30,42 +31,29 @@ class AdminProfile(models.Model):
         return self.user.username
 
 
-
 class User(models.Model):
-
-
-    name = models.CharField(
-        max_length=100
-    )
-
-    email = models.EmailField(
-        unique=True
-    )
-
-    mobile = models.CharField(
-        max_length=15,
-        unique=True
-    )
-
-    password = models.CharField(
-        max_length=128
-    )
-
-    created_at = models.DateTimeField(
-        auto_now_add=True
-    )
+    name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
+    mobile = models.CharField(max_length=15, unique=True)
+    password = models.CharField(max_length=128)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-
         if not self.password.startswith('pbkdf2_'):
-            self.password = make_password(
-                self.password
-            )
-
+            self.password = make_password(self.password)
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.name    
+        return self.name
+
+
+class TaxiDetails(models.Model):
+    source = models.CharField(max_length=100)
+    destination = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.source} to {self.destination}"
+
 
 class Driver(models.Model):
     name = models.CharField(max_length=100)
@@ -73,6 +61,21 @@ class Driver(models.Model):
     license_number = models.CharField(max_length=50, unique=True)
     mobile = models.CharField(max_length=15)
     password = models.CharField(max_length=128)
+    taxi_number = models.CharField(
+        max_length=20,
+        unique=True,
+        null=True,
+        blank=True
+    )
+
+    taxi_details = models.ForeignKey(
+        TaxiDetails,
+        on_delete=models.CASCADE,
+        related_name='drivers',
+        null=True,
+        blank=True
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
@@ -99,23 +102,7 @@ class Taxi(models.Model):
     )
 
     def __str__(self):
-        return f"{self.number} - {self.type}"    
-
-
-
-class TaxiDetails(models.Model):
-
-    source = models.CharField(max_length=100)
-    destination = models.CharField(max_length=100)
-
-    driver = models.ForeignKey(
-        Driver,
-        on_delete=models.CASCADE,
-        related_name='taxi_details'
-    )
-
-    def __str__(self):
-        return f"{self.source} to {self.destination} - {self.driver.name}"    
+        return f"{self.number} - {self.type}"
 
 
 class Booking(models.Model):

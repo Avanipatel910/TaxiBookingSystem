@@ -41,7 +41,7 @@ class TaxiAdmin(admin.ModelAdmin):
 # Taxi details management
 @admin.register(TaxiDetails)
 class TaxiDetailsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'source', 'destination', 'driver')
+    list_display = ('id', 'source', 'destination')
     search_fields = (
         'source',
         'destination',
