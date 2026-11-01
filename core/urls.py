@@ -20,6 +20,8 @@ from core.views import (
     taxi_detail,
     book_taxi,
     confirm_taxi_booking,
+    booking_confirmation,
+    booking_history,
     driver_login,
     driver_dashboard,
     driver_logout,
@@ -103,6 +105,12 @@ path(
     confirm_taxi_booking,
     name='confirm_taxi_booking'
 ),
+path(
+    'booking-confirmation/<int:booking_id>/',
+    booking_confirmation,
+    name='booking_confirmation'
+),
+path('booking-history/', booking_history, name='booking_history'),
 path(
     'forgot-password/',
     user_forgot_password,

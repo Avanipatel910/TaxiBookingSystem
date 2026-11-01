@@ -1692,9 +1692,6 @@ def driver_detail(request, driver_id):
     )
 
 
-# =========================================================
-# DELETE DRIVER
-# =========================================================
 
 def delete_driver(request, driver_id):
 
@@ -1718,9 +1715,6 @@ def delete_driver(request, driver_id):
     )
 
 
-# =========================================================
-# CUSTOMERS / USERS
-# =========================================================
 
 def users(request):
 
@@ -1755,10 +1749,6 @@ def users(request):
         }
     )
 
-
-# =========================================================
-# CUSTOMER DETAIL
-# =========================================================
 
 def user_detail(request, user_id):
 
@@ -2051,35 +2041,83 @@ def book_taxi(request, taxi_id):
     })
 
 
-
 def confirm_taxi_booking(request, taxi_id):
     if request.method != 'POST':
         return redirect('taxi_detail', taxi_id=taxi_id)
 
-    # Get the logged-in custom user from the session.
-    user_id = request.session.get('user_id')
+    customer_id = request.session.get('customer_id')
 
-    if not user_id:
+    if not customer_id:
         messages.error(request, 'Please log in before booking a taxi.')
         return redirect('user_login')
 
-    user = get_object_or_404(User, id=user_id)
+    customer = get_object_or_404(User, id=customer_id)
+    taxi = get_object_or_404(Taxi, id=taxi_id, availability=True)
 
-    taxi = get_object_or_404(
-        Taxi,
-        id=taxi_id,
-        availability=True
+    booking = Booking.objects.create(
+        user=customer,
+        taxi=taxi,
+        status='Pending'
     )
 
+    return redirect('booking_confirmation', booking_id=booking.id)
+    if request.method != 'POST':
+        return redirect('taxi_detail', taxi_id=taxi_id)
+
+    # Get logged-in customer from session
+    customer_id = request.session.get('customer_id')
+
+    if not customer_id:
+        messages.error(request, 'Please log in before booking a taxi.')
+        return redirect('user_login')
+
+    # Get customer and available taxi
+    customer = get_object_or_404(User, id=customer_id)
+    taxi = get_object_or_404(Taxi, id=taxi_id, availability=True)
+
+    # Save booking with Pending status
     Booking.objects.create(
-        user=user,
+        user=customer,
         taxi=taxi,
         status='Pending'
     )
 
     messages.success(
         request,
-        f'Booking confirmed successfully! Your booking is pending approval.'
+        'Your taxi booking has been submitted successfully!'
     )
 
     return redirect('user_dashboard')
+
+
+def booking_confirmation(request, booking_id):
+    customer_id = request.session.get('customer_id')
+
+    if not customer_id:
+        return redirect('user_login')
+
+    booking = get_object_or_404(
+        Booking.objects.select_related('user', 'taxi'),
+        id=booking_id,
+        user_id=customer_id
+    )
+
+    return render(request, 'user/booking_confirmation.html', {
+        'booking': booking
+    })
+
+
+def booking_history(request):
+    customer_id = request.session.get('customer_id')
+
+    if not customer_id:
+        messages.error(request, 'Please log in to view your booking history.')
+        return redirect('user_login')
+
+    bookings = Booking.objects.filter(
+        user_id=customer_id
+    ).select_related('taxi').order_by('-date')
+
+    return render(request, 'user/booking_history.html', {
+        'bookings': bookings
+    })
